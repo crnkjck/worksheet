@@ -1,37 +1,13 @@
-## Welcome to GitHub Pages
+## Bakalárska práca
 
-You can use the [editor on GitHub](https://github.com/NikolajKn/bachelor/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+**Názov:** Interaktívny pracovný hárok pre výučby logiky pre informatikov
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+**Študent:** Nikolaj Kniha  
 
-### Markdown
+**Školiteľ:** Mgr. Ján Kľuka, PhD.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+**Anotácia:** Pri výučbe logiky pre aplikovaných informatikov využívame interaktívne webové nástroje, ktoré sú produktom vyučujúcich a niekoľkých bakalárskych prác a slúžia na kontrolu dôkazov alebo prieskum vzťahu prvorádových štruktúr a formúl. Tieto nástroje sú samostatnými webovými aplikáciami na strane klienta. Študenti ich môžu využiť pri vypracovaní zadaní, ale zadania aj riešenia sú oddelené statické dokumenty a riešenia sa kontrolujú manuálne.
+V rámci tejto práce by mala vzniknúť webová aplikácia fungujúca ako interaktívny pracovný hárok spájajúci zadania a existujúce (a potenciálne aj budúce) nástroje na tvorbu riešení. Na ukladanie týchto hárkov pre teoretické cvičenia by sa mali využiť repozitáre verziovacieho systému git na portáli github, ktoré v súčasnosti využívame pri praktických cvičeniach.
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/NikolajKn/bachelor/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### Cieľ 
+Implementovať webovú aplikáciu na strane klienta s prípadnou potrebnou serverovou podporou v zmysle anotácie.
