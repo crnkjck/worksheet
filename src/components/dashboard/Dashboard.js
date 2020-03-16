@@ -8,12 +8,12 @@ import {Container, Row, Col, Spinner} from "react-bootstrap";
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import { updateOrder,createTodo } from "../../store/actions/todoActions";
-import firebase from "firebase/app"
+
 
 
 
 class Dashboard extends Component{
-
+    
     constructor(props){
         super(props)
         this.state = {
@@ -57,35 +57,7 @@ class Dashboard extends Component{
         ))
     }
 
-    provider = new firebase.auth.GithubAuthProvider();
-    githubSignin = () =>{
-        console.log("blaaaaaaaaaaaa")
-
-        firebase.auth().signInWithPopup(this.provider)
-        .then(function(result) {
-            var token = result.credential.accessToken;
-            var user = result.user;
-              
-            console.log(token)
-            console.log(user)
-         }).catch(function(error) {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-              
-            console.log(error.code)
-            console.log(error.message)
-         })
-    }
-
-    githubSignout = () =>{
-        firebase.auth().signOut()
-        
-        .then(function() {
-           console.log('Signout successful!')
-        }, function(error) {
-           console.log('Signout failed')
-        });
-     }
+   
 
     render(){      
         if(this.state.id === ""){
@@ -109,8 +81,7 @@ class Dashboard extends Component{
                         <div className="secondnav">
                             <SecondNavbar names ={this.names} changeTask = {this.changeTask} />
                         </div>
-                        <button onClick = {this.githubSignin}>Github Signin</button>
-                        <button onClick = {this.githubSignout}>Github Signout</button>
+                        
                     </Col>
                   
                     <Col sm = {9}>  

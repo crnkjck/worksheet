@@ -9,8 +9,7 @@ import SignUp from './components/auth/SignUp.js';
 import ToDoCreate from './components/todo/ToDoCreate.js';
 import NoticeBoard from './components/notice/NoticeBoard.js';
 import Home from './components/home/Home.js';
-
-
+import RepoWrapper from './components/repo/RepoWrapper';
 
 
 class App extends Component {
@@ -23,6 +22,7 @@ class App extends Component {
             <Route exact path ="/" component = {Home} />
             <Route path = "/tasks" component={DashWrapper}/>
             <Route path = "/notice" component={NoticeBoard}/>
+            <Route path = "/repo" component={RepoWrapper}/>
           </Switch>
         </div>
       </BrowserRouter>

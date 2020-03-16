@@ -111,3 +111,11 @@ code {
   opacity: 0;
 } 
 
+
+.findUserForm{
+  margin: 0;
+}
+
+.findUserForm button{
+  margin:0;
+}

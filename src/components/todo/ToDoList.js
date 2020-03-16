@@ -9,10 +9,17 @@ import {updateOrder,createTodo} from "../../store/actions/todoActions"
 import update from 'immutability-helper';
 
 
+import firebase from "firebase/app"
+import { Octokit } from "@octokit/core";
 
 
 const ToDoList = ({cards,cardOrder, changeOrder, updateOrder, taskName, createTodo}) => {
-    
+
+    var token = null
+    var user = null
+
+   
+
     const moveCard = useCallback(
         (dragIndex, hoverIndex) => {
           const dragCard = cardOrder[dragIndex]
@@ -51,6 +58,7 @@ const ToDoList = ({cards,cardOrder, changeOrder, updateOrder, taskName, createTo
     }
 
     return(
+       
         <ListGroup variant="flush">
             {cards && cards.map( (item,i) => {
                 return( 

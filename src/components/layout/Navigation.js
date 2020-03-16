@@ -23,6 +23,9 @@ const Navigation = () => {
                 <LinkContainer to = '/notice'>
                     <Nav.Link className="text-white">Oznámenia</Nav.Link>
                 </LinkContainer>
+                <LinkContainer to = '/repo'>
+                    <Nav.Link className="text-white">Repozitáre</Nav.Link>
+                </LinkContainer>
             </Nav>
             
             <Nav className="xs-2">
