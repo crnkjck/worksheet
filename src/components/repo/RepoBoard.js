@@ -1,16 +1,11 @@
 import React, {Component} from "react";
 import RepoList from "../repo/RepoList";
-import {connect} from "react-redux";
-import {firestoreConnect} from "react-redux-firebase";
-import {compose} from "redux";
-import {Container, Row, Col, Spinner,Form,Button} from "react-bootstrap";
-import {githubSignin} from "../../store/actions/repoActions"
-import axios from "axios"
+import {Container, Row, Col, Spinner,Form,Button, ListGroup} from "react-bootstrap";
 import { Octokit } from "@octokit/rest"
 
 import firebase from "firebase/app"
 import { Base64 } from 'js-base64';
-
+import RepoBranchList from "../repo/RepoBranchList"
 
 class RepoBoard extends Component{
     octokit = null
@@ -19,10 +14,11 @@ class RepoBoard extends Component{
         this.state = {
             token:"",
             userName:"",
-            response:[],
-            user:"",
-            repoList:[]
+            repoList:[],
+            currentRepo:"",
+            currentBranch:""
         }
+
         this.octokit = new Octokit({
             auth:this.state.token,
             userAgent: "NikolajKn",
@@ -59,7 +55,7 @@ class RepoBoard extends Component{
      }
 
     componentDidMount(){
-        this.setState({response:this.getData()})
+        //this.setState({response:this.getData()})
     }
 
    
@@ -73,7 +69,7 @@ class RepoBoard extends Component{
                 format:"html"
             }
           });
-        var textik = Base64.decode(data.content)
+        //var textik = Base64.decode(data.content)
     }
 
     resetState = () => {
@@ -93,28 +89,23 @@ class RepoBoard extends Component{
         }catch(e){
             this.setState({repoList:[]})
         }  
-
-
-        try{
-            var allRepos = await this.octokit.repos.listForUser({
-                username:name
-            });
-            this.setState({repoList:allRepos.data})
-        }catch(e){
-            this.setState({repoList:[]})
-        }  
     }
 
 
     findText = ""
     handleFindButton = async (e) => {
         e.preventDefault()
-        //this.setState({user:this.findText})
         this.findUserRepos(this.findText)
     }
 
     handleFindText = (e) => {
         this.findText = e.target.value
+    }
+
+    setRepoDetails = (newBranch, newRepo) =>{
+        console.log("fungujem")
+        this.setState({currentBranch:newBranch, currentRepo:newRepo})
+        
     }
 
     render(){
@@ -133,10 +124,19 @@ class RepoBoard extends Component{
                             <Button variant="primary" type="submit">
                                 Search
                             </Button>
-                        </Form>      
-                </Col>
-           
+                        </Form> 
+
+                        {
+                            this.state.repoList.length ?
+                                <RepoBranchList repos = {this.state.repoList} setRepoDetails = {this.setRepoDetails} octokit={this.octokit}></RepoBranchList>
+                                :
+                                <div>
+                                    No data
+                                </div>
+                    }                                           
+                </Col>   
             </Row>
+
             <Row>
                 <Col sm = {1}>  
                     <button onClick = {this.githubSignin}>Github Signin</button>
@@ -144,14 +144,14 @@ class RepoBoard extends Component{
                     <button onClick = {this.resetState}>Reset State</button>
                 </Col>     
                 <Col sm = {10}>   
-                {
-                    this.state.repoList.length ?
-                    <RepoList repos = {this.state.repoList} octokit={this.octokit}></RepoList>
-                    :
-                    <div>
-                        No data
-                    </div>
-                }
+                    {
+                        this.state.repoList.length ?
+                        <RepoList repos = {this.state.repoList} octokit={this.octokit} currentRepo={this.state.currentRepo} currentBranch={this.state.currentBranch}></RepoList>
+                        :
+                        <div>
+                            No data
+                        </div>
+                    } 
                 </Col>
             </Row>
             </Container>
@@ -160,7 +160,6 @@ class RepoBoard extends Component{
         
     }
 }
-
 
 
 

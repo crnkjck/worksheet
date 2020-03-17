@@ -15,27 +15,8 @@ class RepoWrapper extends Component{
     
 
     render(){
-        /*
-        var repos = loadUserRepos("NikolajKn")
-        console.log(repos)
-        if(repos.length === 0){
             return(
-                <Container>
-                    <div className="text-center">
-                        <div className="spinner-border" role="status">
-                            <span className="sr-only">Loading...</span>
-                        </div>
-                    </div>
-                </Container>
-            )
-        }else{
-            
-            console.log(repos)
-            */
-            return(
-                <RepoBoard></RepoBoard>
-
-                
+                <RepoBoard></RepoBoard>               
             )
         
   

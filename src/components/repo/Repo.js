@@ -7,13 +7,10 @@ import {Card,Form,Button, ButtonGroup, Accordion, ListGroup} from "react-bootstr
 
 
 
-const Repo = ({item,octokit}) => {
+const Repo = ({item,octokit,currentRepo,currentBranch}) => {
 
-    
-    
     const [repoContents,setRepoContents] = useState([])
     const [repoDetail, setRepoDetail] = useState([])
-   
 
     const getRepoData = async () => {
         var tempData = []
@@ -45,9 +42,9 @@ const Repo = ({item,octokit}) => {
         console.log(fileName)
         var {data} = await octokit.repos.getContents({
             owner:item.owner.login,
-            repo:item.name,
+            repo:currentRepo,
             path:fileName,
-
+            ref:currentBranch,
             mediaType:{
                 format:"raw"
             }
@@ -58,14 +55,8 @@ const Repo = ({item,octokit}) => {
 
     return(
         
-        <div className="card"> 
             <Card bg="white" text="black" >
 
-                <Accordion.Toggle as={Card.Header} eventKey={item.id}>
-                    {item.name}
-                </Accordion.Toggle>
-           
-                <Accordion.Collapse eventKey={item.id}>
                     <Card.Body>
                         <ListGroup variant="flush">
                             {repoContents && repoContents.map( (item) => {
@@ -84,9 +75,9 @@ const Repo = ({item,octokit}) => {
                     }
 
                     </Card.Body>
-                </Accordion.Collapse>
+                
             </Card>
-        </div>
+   
     )}
    
    

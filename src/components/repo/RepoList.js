@@ -1,18 +1,14 @@
 import React , { useState } from "react";
 import Repo from "./Repo"
 import {connect} from "react-redux";
-import {ListGroup, Accordion, Card} from "react-bootstrap";
+import {ListGroup, Accordion, Card, Container} from "react-bootstrap";
 import {loadUserRepos} from "../../store/actions/repoActions"
 
 
 
 
 
-const RepoList = ({repos,octokit}) => {
-
-    const alertClicked = () => {
-        alert('You clicked the third ListGroupItem');
-    }
+const RepoList = ({repos,currentRepo,currentBranch,octokit}) => {
 
     const getRepo = async (item) => {
         /*
@@ -25,8 +21,8 @@ const RepoList = ({repos,octokit}) => {
         */
 
         var repoContents = await octokit.repos.getContents({
-            owner:item.owner.login,
-            repo:item.name
+            owner: item.owner.login,
+            repo: item.name
           });
         
         console.log(repoContents)
@@ -34,33 +30,22 @@ const RepoList = ({repos,octokit}) => {
 
     const renderRepo = (item, index) => {
         return(
-            /*
-            <ListGroup.Item action onClick={() => getRepo(item)} key={item.id}>
-                {item.name}
-           </ListGroup.Item>  
-           */
-            <Repo item = {item} octokit={octokit} key={item.name}/>
+            <Repo item = {item} octokit={octokit} key={item.name} currentRepo={currentRepo} currentBranch={currentBranch}/>
         )
     }
    
     return(
 
-        <Accordion>
+        <Container>
             {repos && repos.map((item,i) => {
                 return( 
                     renderRepo(item,i)
                 )
             })}
-        </Accordion>  
+        </Container>
     )
 }
 
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        
-    }
-}
 
-
-export default connect(null,mapDispatchToProps)(RepoList)
+export default RepoList
