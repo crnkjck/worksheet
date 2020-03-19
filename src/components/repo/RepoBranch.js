@@ -8,7 +8,6 @@ import {Card,Form,Button, ButtonGroup, Accordion, ListGroup} from "react-bootstr
 
 
 const RepoBranch = ({setRepoDetails,repo,octokit}) => {
-    
     const [branches,setBranches] = useState([])
 
     const getRepoBranches = async (item) => {
@@ -31,7 +30,7 @@ const RepoBranch = ({setRepoDetails,repo,octokit}) => {
 
     const renderListItem = (item) => {
         return(
-            <ListGroup.Item key={item.sha} onClick={()=>setRepoDetails(item.name,repo.name)}>
+            <ListGroup.Item key={item.commit.sha} onClick={()=>setRepoDetails(repo,item.name)}>
                 {item.name}
             </ListGroup.Item>
         )

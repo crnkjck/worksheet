@@ -6,6 +6,7 @@ import { Octokit } from "@octokit/rest"
 import firebase from "firebase/app"
 import { Base64 } from 'js-base64';
 import RepoBranchList from "../repo/RepoBranchList"
+import Repo from "./Repo"
 
 class RepoBoard extends Component{
     octokit = null
@@ -15,8 +16,9 @@ class RepoBoard extends Component{
             token:"",
             userName:"",
             repoList:[],
-            currentRepo:"",
-            currentBranch:""
+            currentRepo: "",
+            currentBranch:"",
+            currentRepoData:[]
         }
 
         this.octokit = new Octokit({
@@ -102,58 +104,70 @@ class RepoBoard extends Component{
         this.findText = e.target.value
     }
 
-    setRepoDetails = (newBranch, newRepo) =>{
+    setRepoDetails = async (newRepo, newBranch) =>{
+        var tempData = []
+
+        var contents = await this.octokit.repos.getContents({
+            owner:newRepo.owner.login,
+            repo:newRepo.name,
+            ref:newBranch
+          })
+          console.log(contents)
+          contents.data.map( (item) => {
+            tempData = [...tempData,item]
+        })  
+
         console.log("fungujem")
-        this.setState({currentBranch:newBranch, currentRepo:newRepo})
-        
+        this.setState({currentRepo:newRepo,currentBranch:newBranch, currentRepoData:tempData})  
     }
 
     render(){
+        console.log()
         console.log("RepoBoard ", this.state)
         return(   
             <Container>
-            <Row>
-                <Col sm = {1}>  
-                </Col>     
-                <Col sm = {10}>   
-                    <Form className = "findUserForm" onSubmit={this.handleFindButton}>
-                        <Form.Group controlId="formSearchUser">
-                            <Form.Label>Find user repos</Form.Label>
-                            <Form.Control type="text" placeholder="Enter username" onChange={this.handleFindText}/>
-                        </Form.Group>  
-                            <Button variant="primary" type="submit">
-                                Search
-                            </Button>
-                        </Form> 
+                <Row>
+                    <Col sm = {1}>  
+                    </Col>     
+                    <Col sm = {10}>   
+                        <Form className = "findUserForm" onSubmit={this.handleFindButton}>
+                            <Form.Group controlId="formSearchUser">
+                                <Form.Label>Find user repos</Form.Label>
+                                <Form.Control type="text" placeholder="Enter username" onChange={this.handleFindText}/>
+                            </Form.Group>  
+                                <Button variant="primary" type="submit">
+                                    Search
+                                </Button>
+                            </Form> 
 
+                            {
+                                this.state.repoList.length ?
+                                    <RepoBranchList repos = {this.state.repoList} setRepoDetails = {this.setRepoDetails} octokit={this.octokit}></RepoBranchList>
+                                    :
+                                    <div>
+                                        No data
+                                    </div>
+                        }                                           
+                    </Col>   
+                </Row>
+
+                <Row>
+                    <Col sm = {1}>  
+                        <button onClick = {this.githubSignin}>Github Signin</button>
+                        <button onClick = {this.githubSignout}>Github Signout</button>
+                        <button onClick = {this.resetState}>Reset State</button>
+                    </Col>     
+                    <Col sm = {10}>   
                         {
-                            this.state.repoList.length ?
-                                <RepoBranchList repos = {this.state.repoList} setRepoDetails = {this.setRepoDetails} octokit={this.octokit}></RepoBranchList>
-                                :
-                                <div>
-                                    No data
-                                </div>
-                    }                                           
-                </Col>   
-            </Row>
-
-            <Row>
-                <Col sm = {1}>  
-                    <button onClick = {this.githubSignin}>Github Signin</button>
-                    <button onClick = {this.githubSignout}>Github Signout</button>
-                    <button onClick = {this.resetState}>Reset State</button>
-                </Col>     
-                <Col sm = {10}>   
-                    {
-                        this.state.repoList.length ?
-                        <RepoList repos = {this.state.repoList} octokit={this.octokit} currentRepo={this.state.currentRepo} currentBranch={this.state.currentBranch}></RepoList>
-                        :
-                        <div>
-                            No data
-                        </div>
-                    } 
-                </Col>
-            </Row>
+                            this.state.currentRepo ?
+                                <Repo item = {this.state.currentRepo} octokit={this.octokit} currentBranch={this.state.currentBranch} repoContents={this.state.currentRepoData}/>
+                            :
+                            <div>
+                                No data
+                            </div>
+                        } 
+                    </Col>
+                </Row>
             </Container>
             
         )

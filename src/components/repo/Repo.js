@@ -7,28 +7,28 @@ import {Card,Form,Button, ButtonGroup, Accordion, ListGroup} from "react-bootstr
 
 
 
-const Repo = ({item,octokit,currentRepo,currentBranch}) => {
-
-    const [repoContents,setRepoContents] = useState([])
+const Repo = ({item,octokit,currentBranch,repoContents}) => {
+    console.log(currentBranch)
+    //const [repoContents,setRepoContents] = useState([])
     const [repoDetail, setRepoDetail] = useState([])
+
 
     const getRepoData = async () => {
         var tempData = []
         var contents = await octokit.repos.getContents({
             owner:item.owner.login,
-            repo:item.name
-          });
+            repo:item.name,
+            ref:currentBranch
+          })
+          console.log(contents)
           contents.data.map( (item) => {
             tempData = [...tempData,item]
         })
-        setRepoContents(tempData)   
+        //setRepoContents(tempData)   
     }
+    //getRepoData()
 
-
-    if(repoContents.length === 0){
-        getRepoData()
-    }
-    //console.log(item)
+    console.log(repoContents)
 
     const renderListItem = (item) => {
         return(
@@ -42,15 +42,15 @@ const Repo = ({item,octokit,currentRepo,currentBranch}) => {
         console.log(fileName)
         var {data} = await octokit.repos.getContents({
             owner:item.owner.login,
-            repo:currentRepo,
+            repo:item.name,
             path:fileName,
             ref:currentBranch,
             mediaType:{
-                format:"raw"
+                format:"html"
             }
           });
-          console.log(data)
-          setRepoDetail(data)    
+          setRepoDetail(data)   
+          
     }
 
     return(
