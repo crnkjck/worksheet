@@ -1,13 +1,10 @@
 import React, { useState }  from 'react'
 import {connect} from "react-redux";
-import {firestoreConnect} from "react-redux-firebase";
-import {compose} from "redux";
-import ReactMarkdown from "react-markdown"
-import {Card,Form,Button, ButtonGroup, Accordion, ListGroup} from "react-bootstrap";
+import {Card, ListGroup} from "react-bootstrap";
 
 
 
-const Repo = ({item,octokit,currentBranch,repoContents}) => {
+const Repo = ({item,octokit,currentBranch,repoContents, addToPath}) => {
     console.log(currentBranch)
     //const [repoContents,setRepoContents] = useState([])
     const [repoDetail, setRepoDetail] = useState([])
@@ -30,26 +27,31 @@ const Repo = ({item,octokit,currentBranch,repoContents}) => {
 
     console.log(repoContents)
 
-    const renderListItem = (item) => {
+    const renderListItem = (e) => {
         return(
-            <ListGroup.Item key={item.sha} onClick={()=>renderItemInfo(item.name)}>
-                {item.name}
+            <ListGroup.Item key={e.sha} onClick={()=>renderItemInfo(e)}>
+                {e.name}
             </ListGroup.Item>
         )
     }
 
-    const renderItemInfo = async (fileName) => {
-        console.log(fileName)
-        var {data} = await octokit.repos.getContents({
-            owner:item.owner.login,
-            repo:item.name,
-            path:fileName,
-            ref:currentBranch,
-            mediaType:{
-                format:"html"
-            }
-          });
-          setRepoDetail(data)   
+    const renderItemInfo = async (e) => {
+        console.log(e)
+        if(e.type === "dir"){
+            addToPath(e.path)
+        }else{
+            var {data} = await octokit.repos.getContents({
+                owner:item.owner.login,
+                repo:item.name,
+                path:e.path,
+                ref:currentBranch,
+                mediaType:{
+                    format:"html"
+                }
+              });
+              setRepoDetail(data)  
+        }
+         
           
     }
 
@@ -59,9 +61,9 @@ const Repo = ({item,octokit,currentBranch,repoContents}) => {
 
                     <Card.Body>
                         <ListGroup variant="flush">
-                            {repoContents && repoContents.map( (item) => {
+                            {repoContents && repoContents.map( (e) => {
                                 return( 
-                                    renderListItem(item)
+                                    renderListItem(e)
                                 )
                             })}
                         </ListGroup>
