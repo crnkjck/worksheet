@@ -1,11 +1,11 @@
 import authReducer from "./authReducer"
-import todoReducer from "./todoReducer"
+import cardReducer from "./cardReducer"
 import {combineReducers} from "redux";
 import {firestoreReducer} from "redux-firestore"
 
 const rootReducer = combineReducers({
     auth: authReducer,
-    todo: todoReducer,
+    card: cardReducer,
     firestore: firestoreReducer
 });
 

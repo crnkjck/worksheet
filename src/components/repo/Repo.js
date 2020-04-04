@@ -9,23 +9,20 @@ const Repo = ({item,octokit,currentBranch,repoContents, addToPath}) => {
     //const [repoContents,setRepoContents] = useState([])
     const [repoDetail, setRepoDetail] = useState([])
 
+    
 
-    const getRepoData = async () => {
-        var tempData = []
-        var contents = await octokit.repos.getContents({
-            owner:item.owner.login,
-            repo:item.name,
-            ref:currentBranch
+    const getRepoReadme = async () =>{
+        var {data} = await octokit.repos.getContents({
+            owner: item.owner.login,
+            repo: item.name,
+            ref: currentBranch,
+            path: "README.md",
+            mediaType:{
+                format:"html"
+            }
           })
-          console.log(contents)
-          contents.data.map( (item) => {
-            tempData = [...tempData,item]
-        })
-        //setRepoContents(tempData)   
+          setRepoDetail(data) 
     }
-    //getRepoData()
-
-    console.log(repoContents)
 
     const renderListItem = (e) => {
         return(
@@ -51,12 +48,17 @@ const Repo = ({item,octokit,currentBranch,repoContents, addToPath}) => {
               });
               setRepoDetail(data)  
         }
-         
-          
+
     }
 
+    try{
+        getRepoReadme()
+    }catch(e){
+        console.log(e)
+        console.log("No README.md in this folder")
+    }
+    
     return(
-        
             <Card bg="white" text="black" >
 
                     <Card.Body>
@@ -69,21 +71,15 @@ const Repo = ({item,octokit,currentBranch,repoContents, addToPath}) => {
                         </ListGroup>
                     {
                         repoDetail.length ? 
-                        <div dangerouslySetInnerHTML={{__html:repoDetail}}/>       
+                            <div dangerouslySetInnerHTML={{__html:repoDetail}}/>       
                         :
-                        <div>
-                            ...
-                        </div>
+                            null
                     }
-
-                    </Card.Body>
-                
-            </Card>
+                    </Card.Body>              
+            </Card> 
+    )
+}
    
-    )}
-   
-   
-
 
 
 const mapDispatchToProps = (dispatch) => {

@@ -22,7 +22,7 @@ export const createTodo = (cardOrder,taskName) => {
 */
 
 
-export const createTodo = (cardOrder,taskName, insertIndex = null) => {
+export const createCard = (cardOrder,taskName, insertIndex = null) => {
     
     return  (dispatch, getState, { getFirebase, getFirestore }) => {
         const firestore = getFirestore();
@@ -79,7 +79,23 @@ export const createTodo = (cardOrder,taskName, insertIndex = null) => {
 
 
 
-export const updateTodo = (todo) => {
+export const updateCard = (todo) => {
+
+    return  (dispatch) => {
+
+        try{
+            dispatch({
+                type: "UPDATE_CARD",
+                todo: todo
+            })
+        }catch(err){
+            dispatch({
+                type: "UPDATE_CARD_ERROR",
+                err
+            })
+        }
+    }
+    /*
     return  (dispatch, getState, { getFirebase, getFirestore }) => {
         const firestore = getFirestore();
         const col = firestore.collection("cardData").doc(todo.id)
@@ -99,23 +115,24 @@ export const updateTodo = (todo) => {
             })
         })
     }
+    */
     
 }
  
 
-export const deleteTodo = (todo) => {
+export const deleteCard = (todo) => {
     return  (dispatch, getState, { getFirebase, getFirestore }) => {
         const firestore = getFirestore();
         const col = firestore.collection("cardData").doc(todo.id)
         col.delete()
         .then(() => {
             dispatch({
-                type: "DELETE_TODO",
+                type: "DELETE_CARD",
                 todo: todo
             })
         }).catch((err) => {
             dispatch({
-                type: "UPDATE_TODO_ERROR",
+                type: "UPDATE_CARD_ERROR",
                 err
             })
         })
@@ -144,9 +161,29 @@ const _updateOrder = (cardOrder, name, dispatch, firestore) => {
         })
     }).catch((err) => {
         dispatch({
-            type: "UPDATE_TODO_ERROR",
+            type: "UPDATE_CARD_ERROR",
             err
         })
     })
 }
 
+export const loadCards = (item) => {
+    var parsedItem = JSON.parse(item)
+    var cards = parsedItem.cards
+    var cardOrder = parsedItem.cardOrder
+    return(dispatch)=>{
+        try{
+        dispatch({
+            type:"LOAD_CARD", 
+            cards,
+            cardOrder   
+        }) }  
+        catch(err) {
+            dispatch({
+                type: "LOGOUT_USER_ERROR",
+                err
+            })
+        }
+
+    }
+}

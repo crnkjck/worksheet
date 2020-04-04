@@ -1,25 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react'
 import {connect} from "react-redux";
-
 import ReactMarkdown from "react-markdown"
 import {Card,Form,Button, ButtonGroup} from "react-bootstrap";
-import {updateTodo,createTodo,deleteTodo, updateOrder} from "../../store/actions/todoActions"
+import {updateCard,createCard,deleteCard, updateOrder, loadCards} from "../../store/actions/cardActions"
 import {useDrag, useDrop } from "react-dnd"
 import { ItemTypes } from '../../constants/ItemTypes';
-
-
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 
+import { Base64 } from 'js-base64';
 
-const ToDo = ({todo,createTodo,updateTodo,deleteTodo, updateOrder, cardOrder, index,moveCard, taskName}) => {
+const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder, index,moveCard, taskName, loadCards}) => {
 
     const ref = useRef(null)
-    const [stateTodo, setStateTodo] = useState(todo) 
+    const [stateCard, setStateCard] = useState(card) 
     const [edit, setEdit] = useState({edit:false})
 
 
-    
     const [, drop] = useDrop({
         accept: ItemTypes.TODO,
         hover(item, monitor){
@@ -55,7 +52,7 @@ const ToDo = ({todo,createTodo,updateTodo,deleteTodo, updateOrder, cardOrder, in
    
 
     const [{isDragging}, drag] = useDrag({
-        item : {type : ItemTypes.TODO,todo,index},
+        item : {type : ItemTypes.TODO,card,index},
         collect: monitor => ({
             isDragging: !!monitor.isDragging()
         }),
@@ -70,38 +67,37 @@ const ToDo = ({todo,createTodo,updateTodo,deleteTodo, updateOrder, cardOrder, in
     }
     
     const handleChange = (e) => {
-        setStateTodo({...stateTodo,
+        setStateCard({...stateCard,
             content: e})
     }
 
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
-        updateTodo(stateTodo)
+        updateCard(stateCard)
         setEdit({edit:false})
     }
 
 
     function checkIndex(id){
-        return stateTodo.id === id
+        return stateCard.id === id
     }
 
     const handleCreate = (e) => {
         e.preventDefault()
         var insertIndex = cardOrder.findIndex(checkIndex) + 1
-        createTodo(cardOrder,taskName,insertIndex)
+        createCard(cardOrder,taskName,insertIndex)
     }
     
 
     const handleDelete = (e) => {
         e.preventDefault()
-        
-
+ 
         if(cardOrder.length > 1){
 
-            deleteTodo(stateTodo)
+            deleteCard(stateCard)
             var array = [...cardOrder]; // make a separate copy of the array
-            var index = array.indexOf(stateTodo.id)
+            var index = array.indexOf(stateCard.id)
 
             if (index !== -1) {
                 array.splice(index, 1);
@@ -111,34 +107,43 @@ const ToDo = ({todo,createTodo,updateTodo,deleteTodo, updateOrder, cardOrder, in
     }
     
 
+
+
+    const testing = () =>{
+        var temp = {cardOrder:["1","2"], cards:[{id:"1",content:"bla"},{id:"2",content:"hallo"}]}
+        var json = JSON.stringify(temp)
+        console.log(json)
+        //var x = Base64.encode(json)
+        loadCards(json)
+    }
+
     return(
-        <div className="cardCell" id={index}>             
+        <div className="cardCell" id={index}>                          
+            <Card border="white" bg="white" text="black" ref={ref}>
+                <div className="toolbar">
+                    <ButtonGroup aria-label="Controls">
+                        <Button  className="text-right"  variant="light" onClick={handleDelete}>X</Button>
+                        <Button  className="text-right"  variant="light" onClick={handleBeginEdit}>O</Button>
+                        <Button  className="text-right"  variant="light" onClick={testing}>AS</Button>
+                    </ButtonGroup>
+                </div>
                 
-                <Card border="white" bg="white" text="black" ref={ref}>
-                    <div className="toolbar">
-                        <ButtonGroup aria-label="Controls">
-                            <Button  className="text-right"  variant="light" onClick={handleDelete}>X</Button>
-                            <Button  className="text-right"  variant="light" onClick={handleBeginEdit}>O</Button>
-                        </ButtonGroup>
-                    </div>
-                    
-                    <Card.Body  onClick={handleBeginEdit}>
-                        {
-                            edit.edit ? 
-                                <Form onSubmit={handleEditSubmit} >
-                                    <Form.Group controlId="exampleForm.ControlTextarea1">
-                                        <SimpleMDE onChange={handleChange} value = {stateTodo.content} options={{toolbar:  ["preview","|","bold", "italic", "strikethrough", "|", "heading", "heading-smaller","code", "quote", "|","side-by-side","fullscreen"]}}/>
-                                    </Form.Group>
-                                    <Button className="float-right" variant="secondary" type="submit">Save</Button>
-                                    <ReactMarkdown source={stateTodo.content}/>
-                                </Form>
-                                
-                            :
-                                <ReactMarkdown source={stateTodo.content}/>
-                        }
-                    </Card.Body>
-                   
-                </Card>
+                <Card.Body  onDoubleClick={handleBeginEdit}>
+                    {
+                        edit.edit ? 
+                            <Form onSubmit={handleEditSubmit} >
+                                <Form.Group controlId="exampleForm.ControlTextarea1">
+                                    <SimpleMDE onChange={handleChange} value = {stateCard.content} options={{toolbar:  ["preview","|","bold", "italic", "strikethrough", "|", "heading", "heading-smaller","code", "quote", "|","side-by-side","fullscreen"]}}/>
+                                </Form.Group>
+                                <Button className="float-right" variant="secondary" type="submit">Save</Button>
+                                <ReactMarkdown source={stateCard.content}/>
+                            </Form>
+                            
+                        :
+                            <ReactMarkdown source={stateCard.content}/>
+                    }
+                </Card.Body>
+            </Card>
             
             <div className="addCard">
                 <Button className="addCardButton" variant="outline-dark" onClick={handleCreate}>Add</Button>
@@ -159,10 +164,12 @@ const ToDo = ({todo,createTodo,updateTodo,deleteTodo, updateOrder, cardOrder, in
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        updateTodo: (todo) => dispatch(updateTodo(todo)),
-        createTodo: (cardOrder,taskName,insertIndex) => dispatch(createTodo(cardOrder,taskName,insertIndex)),
-        deleteTodo: (todo) => dispatch(deleteTodo(todo)),
-        updateOrder: (cardOrder,taskName) => dispatch(updateOrder(cardOrder,taskName)) 
+        updateCard: (card) => dispatch(updateCard(card)),
+        createCard: (cardOrder,taskName,insertIndex) => dispatch(createCard(cardOrder,taskName,insertIndex)),
+        deleteCard: (card) => dispatch(deleteCard(card)),
+        updateOrder: (cardOrder,taskName) => dispatch(updateOrder(cardOrder,taskName)),
+
+        loadCards:(item) => dispatch(loadCards(item))
 
     }
 }
@@ -186,7 +193,7 @@ export default compose(
     firestoreConnect([{collection: "todos"}])
 )(ToDo)
 */
-export default connect(null,mapDispatchToProps)(ToDo)
+export default connect(null,mapDispatchToProps)(CardItem)
 
 
 

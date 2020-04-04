@@ -1,13 +1,13 @@
 import React, {Component} from "react";
 import SecondNavbar from "../layout/SecondNavbar";
-import TodoList from "../todo/ToDoList";
+import CardList from "../todo/CardList";
 import {connect} from "react-redux";
 import {firestoreConnect} from "react-redux-firebase";
 import {compose} from "redux";
 import {Container, Row, Col, Spinner} from "react-bootstrap";
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
-import { updateOrder,createTodo } from "../../store/actions/todoActions";
+import { updateOrder,createCard } from "../../store/actions/cardActions";
 
 
 
@@ -58,7 +58,6 @@ class Dashboard extends Component{
     }
 
    
-
     render(){      
         if(this.state.id === ""){
             return(
@@ -80,21 +79,19 @@ class Dashboard extends Component{
                     <Col sm = {2} >
                         <div className="secondnav">
                             <SecondNavbar names ={this.names} changeTask = {this.changeTask} />
-                        </div>
-                        
+                        </div>     
                     </Col>
                   
                     <Col sm = {9}>  
                         <DndProvider backend={HTML5Backend}>
-                            <TodoList cards = {taskCards} cardOrder={this.state.order} changeOrder={this.changeOrder} taskName = {this.state.task}/> 
+                            <CardList cards = {taskCards} cardOrder={this.state.order} changeOrder={this.changeOrder} taskName = {this.state.task}/> 
                         </DndProvider>
                     </Col>
                     <Col />
                 </Row>
-             
-                
+         
             )
-            }
+        }
     }
 }
 
@@ -102,7 +99,7 @@ class Dashboard extends Component{
 const mapDispatchToProps = (dispatch) => {
     return {
         updateOrder: (cardOrder, taskName) => dispatch(updateOrder(cardOrder,taskName)),
-        createTodo: (cardOrder,taskName,insertIndex) => dispatch(createTodo(cardOrder,taskName,insertIndex))
+        createCard: (cardOrder,taskName,insertIndex) => dispatch(createCard(cardOrder,taskName,insertIndex))
     }
 }
 

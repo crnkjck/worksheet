@@ -1,19 +1,24 @@
 import React, {Component} from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import Navbar from './components/layout/Navigation';
-import Dashboard from './components/dashboard/Dashboard';
 import DashWrapper from './components/dashboard/DashWrapper';
-import ToDo from './components/todo/ToDo';
-import SignIn from './components/auth/SignIn.js';
-import SignUp from './components/auth/SignUp.js';
-import ToDoCreate from './components/todo/ToDoCreate.js';
 import NoticeBoard from './components/notice/NoticeBoard.js';
 import Home from './components/home/Home.js';
 import RepoWrapper from './components/repo/RepoWrapper';
+import firebase from "firebase/app"
 
 
 class App extends Component {
+  constructor(props){
+    super(props);
+    firebase.auth().onAuthStateChanged((user) => {
+      //console.log(user.getIdToken())
+    });
+  }
   render() {
+    
+
+  
     return(
       <BrowserRouter>
         <div className="App">

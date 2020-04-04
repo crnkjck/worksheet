@@ -1,24 +1,18 @@
 import React , { useState, useCallback } from "react";
-
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 import {ListGroup} from "react-bootstrap";
-import ToDo from "./ToDo"
-import {updateOrder,createTodo} from "../../store/actions/todoActions"
-
+import CardItem from "./CardItem"
+import {updateOrder,createCard} from "../../store/actions/cardActions"
 import update from 'immutability-helper';
-
-
 import firebase from "firebase/app"
 import { Octokit } from "@octokit/core";
 
 
-const ToDoList = ({cards,cardOrder, changeOrder, updateOrder, taskName, createTodo}) => {
+const ToDoList = ({cards,cardOrder, changeOrder, updateOrder, taskName, createCard}) => {
 
     var token = null
     var user = null
-
-   
 
     const moveCard = useCallback(
         (dragIndex, hoverIndex) => {
@@ -36,13 +30,11 @@ const ToDoList = ({cards,cardOrder, changeOrder, updateOrder, taskName, createTo
       )
   
 
-   
-
     const renderCard = (item, index) => {
         return(
             <ListGroup.Item className = "card" key={item.id}>
-                <ToDo id={index}
-                    todo = {item}
+                <CardItem id={index}
+                    card = {item}
                     index = {index}
                     cardOrder = {cardOrder}
                     moveCard = {moveCard}
@@ -54,9 +46,9 @@ const ToDoList = ({cards,cardOrder, changeOrder, updateOrder, taskName, createTo
     }
 
     if((cardOrder[0] === "" || cardOrder.length === 0) && (taskName !== "")){
-        createTodo(cardOrder,taskName,0)
+        createCard(cardOrder,taskName,0)
     }
-
+ 
     return(
        
         <ListGroup variant="flush">
@@ -73,7 +65,7 @@ const ToDoList = ({cards,cardOrder, changeOrder, updateOrder, taskName, createTo
 const mapDispatchToProps = (dispatch) => {
     return {
         updateOrder: (cardOrder, taskName) => dispatch(updateOrder(cardOrder,taskName)),
-        createTodo: (cardOrder,taskName,insertIndex) => dispatch(createTodo(cardOrder,taskName,insertIndex)), 
+        createCard: (cardOrder,taskName,insertIndex) => dispatch(createCard(cardOrder,taskName,insertIndex)), 
     }
 }
 

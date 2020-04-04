@@ -28,10 +28,7 @@ class DashWrapper extends Component{
             return(
                 <Dashboard cards = {cardData} cardOrder = {cardOrder} ></Dashboard>
             )
-        }
-                
-     
-            
+        }      
     }
 }
 

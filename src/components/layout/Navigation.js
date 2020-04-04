@@ -1,13 +1,11 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
-import SignedInLinks from "./SignedInLinks";
-import SignedOutLinks from "./SignedOutLinks";
 import {Navbar, Button,Nav,NavDropdown} from "react-bootstrap";
 import { LinkContainer } from 'react-router-bootstrap'
+import { githubSignin,githubSignout } from "../../store/actions/authActions";
+import {connect} from "react-redux";
 
+const Navigation = ({githubSignin,githubSignout, user}) => {
 
-
-const Navigation = () => {
     return(
        <Navbar bg="dark" variant= "dark" expand="lg">
             <LinkContainer to = '/'>
@@ -27,32 +25,38 @@ const Navigation = () => {
                     <Nav.Link className="text-white">Repozitáre</Nav.Link>
                 </LinkContainer>
             </Nav>
+            <Button onClick={() => console.log(user)}>Bla</Button>
             
             <Nav className="xs-2">
-                <NavDropdown 
-                title="Nikolaj Kniha" id="nav-dropdown">
-                    <NavDropdown.Item eventKey="4.1">Nastavenie</NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item eventKey="4.4">Odhlásenie</NavDropdown.Item>
-                </NavDropdown>
-             </Nav>
-            
-         
-            
-           
+                {
+                user ? 
+                    <NavDropdown title={user.additionalUserInfo.username} id="nav-dropdown">
+                        <NavDropdown.Item eventKey="4.1" onClick={()=> githubSignout()}>Log Out</NavDropdown.Item>
+                    </NavDropdown> 
+                : 
+                    
+                    <NavDropdown title="Anonymous" id="nav-dropdown">
+                        <NavDropdown.Item eventKey="4.1" onClick={()=> githubSignin()}>Log In</NavDropdown.Item>
+                    </NavDropdown>
+
+                }            
+             </Nav>        
        </Navbar>
     )
 }
 
-export default Navigation;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        githubSignin: () => dispatch(githubSignin()),
+        githubSignout: () => dispatch(githubSignout())        
+        
+    }
+}
 
+const mapStateToProps = (state) => {
+    return {
+        user:state.auth.user,
+    }
+}
 
-/*
- <nav className="nav-wrapper grey darken-3">
-            <div className="container">
-                <Link to = '/' className = "brand-logo">PokemonPlan</Link>
-                <SignedInLinks/>
-                <SignedOutLinks/>
-            </div>
-        </nav>
-        */
+export default connect(mapStateToProps,mapDispatchToProps)(Navigation)
