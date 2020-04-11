@@ -4,7 +4,7 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { githubSignin,githubSignout } from "../../store/actions/authActions";
 import {connect} from "react-redux";
 
-const Navigation = ({githubSignin,githubSignout, user}) => {
+const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state}) => {
 
     return(
        <Navbar bg="dark" variant= "dark" expand="lg">
@@ -25,8 +25,10 @@ const Navigation = ({githubSignin,githubSignout, user}) => {
                     <Nav.Link className="text-white">Repozitáre</Nav.Link>
                 </LinkContainer>
             </Nav>
-            <Button onClick={() => console.log(user)}>Bla</Button>
-            
+            <Button onClick={() => console.log(user)}>User</Button>
+            <Button onClick={() => console.log(cardOrder)}>Order</Button>
+            <Button onClick={() => console.log(cards)}>Cards</Button>
+            <Button onClick={() => console.log(state)}>State</Button>
             <Nav className="xs-2">
                 {
                 user ? 
@@ -55,7 +57,10 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
     return {
-        user:state.auth.user,
+        user: state.auth.user,
+        cards: state.card,
+        cardOrder: state.card.cardOrder,
+        state: state
     }
 }
 

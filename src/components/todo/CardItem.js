@@ -10,7 +10,7 @@ import "easymde/dist/easymde.min.css";
 
 import { Base64 } from 'js-base64';
 
-const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder, index,moveCard, taskName, loadCards}) => {
+const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder, index,moveCard, taskName, loadCards, octokit}) => {
 
     const ref = useRef(null)
     const [stateCard, setStateCard] = useState(card) 
@@ -18,7 +18,7 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
 
 
     const [, drop] = useDrop({
-        accept: ItemTypes.TODO,
+        accept: ItemTypes.CARD,
         hover(item, monitor){
          
             if (!ref.current){
@@ -52,7 +52,7 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
    
 
     const [{isDragging}, drag] = useDrag({
-        item : {type : ItemTypes.TODO,card,index},
+        item : {type : ItemTypes.CARD,card,index},
         collect: monitor => ({
             isDragging: !!monitor.isDragging()
         }),
@@ -74,7 +74,7 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
-        updateCard(stateCard)
+        updateCard(stateCard,octokit)
         setEdit({edit:false})
     }
 

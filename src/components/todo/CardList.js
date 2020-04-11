@@ -1,13 +1,104 @@
-import React , { useState, useCallback } from "react";
+import React , { useState, useCallback, useEffect } from "react";
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 import {ListGroup} from "react-bootstrap";
 import CardItem from "./CardItem"
 import {updateOrder,createCard} from "../../store/actions/cardActions"
 import update from 'immutability-helper';
-import firebase from "firebase/app"
-import { Octokit } from "@octokit/core";
 
+
+
+const CardList = ({cards, cardOrder, file, updateOrder, createCard, octokit}) => {
+
+    //console.log(cards,cardOrder)
+
+    //const [order, setOrder] = useState(cardOrder)
+
+    //useEffect(() => {setOrder(cardOrder)},[cardOrder])
+
+    var taskCards = []
+    cardOrder.map((item) => {
+        taskCards = [...taskCards, cards.find(e => e.id === item)]
+    })
+    //console.log(taskCards, cards)
+
+    const moveCard = useCallback(
+        (dragIndex, hoverIndex) => {
+          const dragCard = cardOrder[dragIndex]
+          updateOrder(
+            update(cardOrder, {
+              $splice: [
+                [dragIndex, 1],
+                [hoverIndex, 0, dragCard]
+              ],
+            }),
+          )
+        },
+        [cardOrder],
+      )
+  
+
+    const renderCard = (item, index) => {
+        return(
+            <ListGroup.Item className = "card" key={item.id} id = {item.id} octokit={octokit}>
+                <CardItem 
+                    id = {item.id}
+                    card = {item}
+                    index = {index}
+                    cardOrder = {cardOrder}
+                    moveCard = {moveCard}
+                    setOrder = {updateOrder}
+                    file = {file}
+                    />
+           </ListGroup.Item>  
+        )
+    }
+
+    /*
+    if((cardOrder[0] === "" || cardOrder.length === 0)){
+        createCard(cardOrder,taskName,0)
+    }
+    */
+ 
+    return(
+       
+        <ListGroup variant="flush">
+            {taskCards && taskCards.map( (item,i) => {
+                return( 
+                    renderCard(item,i)
+                )
+            })}
+        </ListGroup>
+    )    
+}
+
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateOrder: (cardOrder, taskName) => dispatch(updateOrder(cardOrder,taskName)),
+        createCard: (cardOrder,taskName,insertIndex) => dispatch(createCard(cardOrder,taskName,insertIndex)), 
+
+    }
+}
+
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.auth.user,
+        accessToken: state.auth.accessToken,
+        cards: state.card.cards,
+        cardOrder: state.card.cardOrder,
+        file:state.card.file
+    }
+}
+
+
+export default connect(mapStateToProps,mapDispatchToProps)(CardList)
+
+
+
+
+/*
 
 const ToDoList = ({cards,cardOrder, changeOrder, updateOrder, taskName, createCard}) => {
 
@@ -71,12 +162,7 @@ const mapDispatchToProps = (dispatch) => {
 
 
 export default connect(null,mapDispatchToProps)(ToDoList)
-
-
-
-
-
-
+*/
 
 
 

@@ -1,4 +1,5 @@
 import firebase from "firebase/app"
+import { Octokit } from "@octokit/rest"
 
 
 export const githubSignin = () =>{
@@ -6,11 +7,18 @@ export const githubSignin = () =>{
     return(dispatch) =>{
         provider.addScope('repo')
         firebase.auth().signInWithPopup(provider)
-        .then((result) => {   
+        .then((result) => {  
+            var octokit = new Octokit({
+                auth: result.credential.accessToken,
+                userAgent: "NikolajKn",
+                baseUrl: "https://api.github.com"
+            }) 
             dispatch({
                 type:"LOGIN_USER",
-                data:result
+                data:result,
+                octokit
             })   
+            
             
         })
         .catch((err) => {
