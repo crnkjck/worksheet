@@ -1,8 +1,7 @@
 
 const initState = {
-    userName:"",
+    user:"",
     accessToken:"",
-    userData:"",
     octokit: null
 };
 
@@ -10,18 +9,15 @@ const initState = {
 const authReducer = (state = initState, action) => {
     switch(action.type){
         case "LOGIN_USER" : 
-        console.log("LOGIN", action, state)
             return {
                 user: action.data,
-                accessToken: action.data.credential.accessToken,
-                octokit: action.octokit
-               
+                accessToken: action.data.credential.oauthAccessToken,
+                octokit: action.octokit   
             };
         case "LOGOUT_USER" :  
             return  {
-                userName:"",
+                user:"",
                 accessToken:"",
-                userData:"",
                 octokit: null
             };  
         

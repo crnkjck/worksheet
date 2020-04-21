@@ -1,22 +1,24 @@
 
 const initState = {
-    currentFile: "",
+    currentFile: null,
+    currentFileContent: null,
     repoList:[],
     currentRepo: "",
     branchList:[],
     currentBranch:"",
     currentRepoData:[],
     path:""
+
 };
 
 
 const repoReducer = (state = initState, action) => {
     switch(action.type){
         case "LOAD_FILE" : 
-            console.log("LOAD_FILE", action, state)
             return {
                 ...state,
-                currentFile: action.file
+                currentFile: action.currentFile,
+                currentFileContent: action.currentFileContent
             };
 
         case "CLOSE_FILE" :  
@@ -25,6 +27,11 @@ const repoReducer = (state = initState, action) => {
                 currentFile: ""
             }; 
 
+        case "SET_CURRENT_FILE" :  
+            return  {
+                ...state,
+                currentFile: action.currentFile
+            }; 
         case "SET_REPO_LIST" : 
             console.log("SET_REPO_LIST", action, state)
             return {
@@ -36,14 +43,21 @@ const repoReducer = (state = initState, action) => {
             return  {
                 ...state,
                 currentRepo: action.currentRepo,
-                branchList: action.branchList
+                branchList: action.branchList,
+                currentFile: null,
+                currentFileContent: null,
+                currentBranch:"",
+                currentRepoData:[],
+                path:""
             }; 
         case "SET_CURRENT_REPO_DATA" :  
             return  {
                 ...state,
                 currentBranch: action.currentBranch,
                 currentRepoData: action.currentRepoData,
-                path: action.path
+                path: action.path,
+                currentFile: null,
+                currentFileContent: null,
             }; 
 
         case "UPDATE_REPO" : 

@@ -1,81 +1,147 @@
+import { Base64 } from 'js-base64';
 
-export const createCard = (cardOrder,taskName) => {
-    console.log(cardOrder)
-    return  (dispatch, getState, { getFirebase, getFirestore }) => {
-        const firestore = getFirestore();
-        firestore.collection("todos").add({
-            title : "",
-            assignment:"",
-            content: ""
-        }).then(
-            (docRef) => updateOrder([...cardOrder,docRef.id])
-        ).catch((err) => {
+
+export const createCard = (cards, cardOrder, insertIndex, repo, octokit) => {
+    var tempOrder = cardOrder
+    var newId = Date.now().toString() + (Math.random()*9999).toString()
+    var newCard = {id: newId, content:""}
+    tempOrder.splice(insertIndex,0, newId)
+    console.log(tempOrder)
+    var newCardArr = {type:"magic",cards: [...cards.cards, newCard], cardOrder: tempOrder }
+    console.log(newCardArr)
+
+    var content = Base64.encode(JSON.stringify(newCardArr))
+
+    return  (dispatch) => {
+        dispatch({
+            type: "SET_WORKING",
+                working:true
+        })
+        octokit.repos.createOrUpdateFile({
+        owner: repo.currentRepo.owner.login,
+        repo: repo.currentRepo.name,
+        path: repo.currentFile.path,
+        branch: repo.currentBranch.name,
+        message: "...",
+        sha: repo.currentFile.sha,
+        content: content 
+        }).then((result) => {
+            console.log(result)
             dispatch({
-                type: "CREATE_TODO_ERROR",
-                err
+                type: "CREATE_CARD",
+                cards: newCardArr.cards,
+                cardOrder: newCardArr.cardOrder
+            })
+            dispatch({
+                type: "SET_CURRENT_FILE",
+                currentFile: result.data.content
+            })
+            dispatch({
+                type: "SET_WORKING",
+                    working:false
             })
         })
+            
+        .catch((err) => {
+            alert("File was not saved.\n Please try again.")
+            console.log(err)
+        })
     }
-    
 }
 
 
 
-export const updateCard = (card,octokit) => {
-    console.log(card)
-    return  (dispatch,getState) => {
-        console.log(getState())
-        try{
+export const updateCard = (card, cards, repo, octokit) => {
+    var newCardArr = {
+        type:"magic",
+        cardOrder: cards.cardOrder, 
+        cards: cards.cards.map(item => (item.id === card.id ? {id: card.id, content: card.content}: item))
+    }
+    console.log(JSON.stringify(newCardArr))
+    var content = Base64.encode(JSON.stringify(newCardArr))
+    console.log(content)
+    return(dispatch) => {
+        dispatch({
+            type: "SET_WORKING",
+                working:true
+        })
+        octokit.repos.createOrUpdateFile({
+            owner: repo.currentRepo.owner.login,
+            repo: repo.currentRepo.name,
+            path: repo.currentFile.path,
+            branch: repo.currentBranch.name,
+            message: "...",
+            sha: repo.currentFile.sha,
+            content: content
+        }).then((result) => {
             dispatch({
                 type: "UPDATE_CARD",
-                card
+                cards: newCardArr.cards,
+                cardOrder: newCardArr.cardOrder
             })
-        }catch(err){
             dispatch({
-                type: "UPDATE_CARD_ERROR",
-                err
+                type: "SET_CURRENT_FILE",
+                currentFile: result.data.content
             })
-        }
-    }
-    /*
-    return  (dispatch, getState, { getFirebase, getFirestore }) => {
-        const firestore = getFirestore();
-        const col = firestore.collection("cardData").doc(todo.id)
-        
-        
-        col.update({
-            content: todo.content
-        }).then(() => {
             dispatch({
-                type: "UPDATE_TODO",
-                todo: todo
+                type: "SET_WORKING",
+                    working:false
             })
         }).catch((err) => {
-            dispatch({
-                type: "UPDATE_TODO_ERROR",
-                err
-            })
+            console.log(err)
         })
     }
-    */
-    
 }
  
 
-export const deleteCard = (item) => {
+export const deleteCard = (card, cards, cardOrder,  repo, octokit) => {
+    
+    var tempOrder = cardOrder
+    var removeIndex = cardOrder.indexOf(card.id)
+    tempOrder.splice(removeIndex,1)
+    console.log(tempOrder)
+
+    var newCardArr = {
+        type:"magic",
+        cardOrder: tempOrder, 
+        cards: cards.cards.filter(item => item.id !== card.id) 
+    }
+    console.log(newCardArr)
+    var content = Base64.encode(JSON.stringify(newCardArr))
+
     return  (dispatch) => {
-        try{
+        dispatch({
+            type: "SET_WORKING",
+                working:true
+        })
+        octokit.repos.createOrUpdateFile({
+        owner: repo.currentRepo.owner.login,
+        repo: repo.currentRepo.name,
+        path: repo.currentFile.path,
+        branch: repo.currentBranch.name,
+        message: "...",
+        sha: repo.currentFile.sha,
+        content: content 
+        }).then((result) => {
+            console.log(result)
             dispatch({
                 type: "DELETE_CARD",
-                card: item
+                cards: newCardArr.cards,
+                cardOrder: newCardArr.cardOrder
             })
-        }
-        catch(err){
             dispatch({
-                type: "UPDATE_CARD_ERROR",
-                err
+                type: "SET_CURRENT_FILE",
+                currentFile: result.data.content
             })
-        }
+            dispatch({
+                type: "SET_WORKING",
+                    working:false
+            })
+        })
+            
+        .catch((err) => {
+            console.log(err)
+        })
     }
 }
 
@@ -100,8 +166,9 @@ export const updateOrder = (cardOrder) => {
 }
 
 
-export const loadCards = (item) => {
-    var parsedItem = JSON.parse(item.data)
+export const loadCards = (repo,result) => {
+    console.log(result)
+    var parsedItem = JSON.parse(result.data)
     var cards = parsedItem.cards
     var cardOrder = parsedItem.cardOrder
     return(dispatch)=>{

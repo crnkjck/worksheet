@@ -1,3 +1,4 @@
+import { loadCards } from "./cardActions"
 
 
 export const findUserRepos = (octokit) => {
@@ -26,12 +27,16 @@ export const setCurrentRepo = (repo, octokit) => {
             result.data.map((item) => {
                 tempData = [...tempData,item]
             })
-            
+
             dispatch({
                 type: "SET_CURRENT_REPO",
                 currentRepo: repo,
                 branchList: tempData
             })
+            dispatch({
+                type:"CLOSE_CARDS"
+            })
+            dispatch(setCurrentRepoData(repo,{name:"master"},"", octokit))
         }).catch((e) => {
             console.log(e)
         })
@@ -59,6 +64,9 @@ export const setCurrentRepoData = (currentRepo, branch, path, octokit) => {
                 currentRepoData: tempData,
                 path: path
             })
+            dispatch({
+                type:"CLOSE_CARDS"
+            })
         }).catch((e) => {
             console.log(e)
             alert("File does not exists in this branch")
@@ -69,7 +77,6 @@ export const setCurrentRepoData = (currentRepo, branch, path, octokit) => {
 
 
 export const updateRepo = (item) => {
-    console.log(item)
     return  (dispatch) => {
         try{
             dispatch({
@@ -89,21 +96,46 @@ export const updateRepo = (item) => {
 }
 
 
-
-
-export const loadFile = (file) => {
-    console.log(file)
+export const loadFile = (repo, file, path, format, octokit) => {
     return  (dispatch) => {
-        try{
-            dispatch({
-                type: "LOAD_FILE",
-                file
-            })
-        }catch(err){
+        octokit.repos.getContents({
+            owner: repo.currentRepo.owner.login,
+            repo: repo.currentRepo.name,
+            path: path,
+            ref: repo.currentBranch.name,
+            mediaType: {
+                format: format
+            }
+        }).then((result) => {
+            var cardJson = false
+            try{
+                var parsedItem = JSON.parse(result.data)
+                cardJson = parsedItem.type === "magic" ? true : false
+            }catch(e){
+                console.log("Not JSON")
+            }
+            
+            if(cardJson){
+                dispatch(loadCards(repo,result))
+                dispatch({
+                    type: "LOAD_FILE",
+                    currentFile: file,
+                    currentFileContent: null
+                })
+                
+                
+            }else{
+                dispatch({
+                    type: "LOAD_FILE",
+                    currentFile: file,
+                    currentFileContent: result
+                })
+            }
+            
+        }).catch((err) => {
            console.log(err)
-        }
+        })
     }
-    
 }
 
 

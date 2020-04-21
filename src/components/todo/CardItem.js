@@ -10,17 +10,17 @@ import "easymde/dist/easymde.min.css";
 
 import { Base64 } from 'js-base64';
 
-const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder, index,moveCard, taskName, loadCards, octokit}) => {
+const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCard, updateOrder, index, moveCard, taskName, loadCards, updateCard}) => {
 
     const ref = useRef(null)
     const [stateCard, setStateCard] = useState(card) 
     const [edit, setEdit] = useState({edit:false})
 
+    useEffect(() => {setStateCard(card)},[card])
 
     const [, drop] = useDrop({
         accept: ItemTypes.CARD,
         hover(item, monitor){
-         
             if (!ref.current){
                 return
             }
@@ -49,7 +49,6 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
         },
     })
 
-   
 
     const [{isDragging}, drag] = useDrag({
         item : {type : ItemTypes.CARD,card,index},
@@ -58,6 +57,7 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
         }),
     })
    
+
     drag(drop(ref))
 
 
@@ -66,6 +66,7 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
          
     }
     
+
     const handleChange = (e) => {
         setStateCard({...stateCard,
             content: e})
@@ -74,7 +75,7 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
-        updateCard(stateCard,octokit)
+        updateCard(stateCard, cards, repo, octokit)
         setEdit({edit:false})
     }
 
@@ -83,10 +84,11 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
         return stateCard.id === id
     }
 
+
     const handleCreate = (e) => {
         e.preventDefault()
         var insertIndex = cardOrder.findIndex(checkIndex) + 1
-        createCard(cardOrder,taskName,insertIndex)
+        createCard(cards, cardOrder, insertIndex, repo, octokit)
     }
     
 
@@ -94,20 +96,18 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
         e.preventDefault()
  
         if(cardOrder.length > 1){
-
-            deleteCard(stateCard)
+            deleteCard(stateCard, cards, cardOrder, repo, octokit)
+            /*
             var array = [...cardOrder]; // make a separate copy of the array
             var index = array.indexOf(stateCard.id)
 
             if (index !== -1) {
                 array.splice(index, 1);
                 updateOrder(array,taskName)
-            }
+            }*/
         }
     }
     
-
-
 
     const testing = () =>{
         var temp = {cardOrder:["1","2"], cards:[{id:"1",content:"bla"},{id:"2",content:"hallo"}]}
@@ -117,25 +117,24 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
         loadCards(json)
     }
 
+
     return(
         <div className="cardCell" id={index}>                          
             <Card border="white" bg="white" text="black" ref={ref}>
                 <div className="toolbar">
                     <ButtonGroup aria-label="Controls">
-                        <Button  className="text-right"  variant="light" onClick={handleDelete}>X</Button>
-                        <Button  className="text-right"  variant="light" onClick={handleBeginEdit}>O</Button>
-                        <Button  className="text-right"  variant="light" onClick={testing}>AS</Button>
+                        <Button  className="text-right"  variant="light" onClick={handleDelete} disabled={cards.working}>X</Button>
                     </ButtonGroup>
                 </div>
                 
                 <Card.Body  onDoubleClick={handleBeginEdit}>
                     {
                         edit.edit ? 
-                            <Form onSubmit={handleEditSubmit} >
+                            <Form onSubmit={handleEditSubmit} className="cardEditor">
                                 <Form.Group controlId="exampleForm.ControlTextarea1">
                                     <SimpleMDE onChange={handleChange} value = {stateCard.content} options={{toolbar:  ["preview","|","bold", "italic", "strikethrough", "|", "heading", "heading-smaller","code", "quote", "|","side-by-side","fullscreen"]}}/>
                                 </Form.Group>
-                                <Button className="float-right" variant="secondary" type="submit">Save</Button>
+                                <Button className="float-right" variant="secondary" type="submit" disabled={cards.working}>Save</Button>
                                 <ReactMarkdown source={stateCard.content}/>
                             </Form>
                             
@@ -146,12 +145,38 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
             </Card>
             
             <div className="addCard">
-                <Button className="addCardButton" variant="outline-dark" onClick={handleCreate}>Add</Button>
+                <Button className="addCardButton" variant="outline-dark" onClick={handleCreate} disabled={cards.working}>Add</Button>
             </div>
         </div>
     )}
    
    
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateCard: (card, cards, repo, octokit) => dispatch(updateCard(card, cards,repo, octokit)),
+        createCard: (cards, cardOrder, insertIndex, repo, octokit) => dispatch(createCard(cards, cardOrder, insertIndex, repo, octokit)),
+        deleteCard: (stateCard, cards, cardOrder, repo, octokit) => dispatch(deleteCard(stateCard, cards, cardOrder, repo, octokit)),
+        updateOrder: (cardOrder,taskName) => dispatch(updateOrder(cardOrder,taskName)),
+        loadCards:(item) => dispatch(loadCards(item))
+
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        user: state.auth,
+        repo: state.repo,
+        octokit: state.auth.octokit,
+        cards: state.card,
+        cardOrder: state.card.cardOrder     
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(CardItem)
+
+
+
 
 /*
                 <Form onSubmit={handleSubmit}>
@@ -161,18 +186,6 @@ const CardItem = ({card,createCard,updateCard,deleteCard, updateOrder, cardOrder
                         <Button className="float-right" variant="secondary" type="submit">Save</Button>
                     </Form>
 */
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        updateCard: (card) => dispatch(updateCard(card)),
-        createCard: (cardOrder,taskName,insertIndex) => dispatch(createCard(cardOrder,taskName,insertIndex)),
-        deleteCard: (card) => dispatch(deleteCard(card)),
-        updateOrder: (cardOrder,taskName) => dispatch(updateOrder(cardOrder,taskName)),
-
-        loadCards:(item) => dispatch(loadCards(item))
-
-    }
-}
 /*
 
 
@@ -193,10 +206,6 @@ export default compose(
     firestoreConnect([{collection: "todos"}])
 )(ToDo)
 */
-export default connect(null,mapDispatchToProps)(CardItem)
-
-
-
 
 /*
 

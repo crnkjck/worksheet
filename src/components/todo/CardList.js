@@ -8,7 +8,7 @@ import update from 'immutability-helper';
 
 
 
-const CardList = ({cards, cardOrder, file, updateOrder, createCard, octokit}) => {
+const CardList = ({cards, cardOrder, updateOrder}) => {
 
     //console.log(cards,cardOrder)
 
@@ -20,7 +20,7 @@ const CardList = ({cards, cardOrder, file, updateOrder, createCard, octokit}) =>
     cardOrder.map((item) => {
         taskCards = [...taskCards, cards.find(e => e.id === item)]
     })
-    //console.log(taskCards, cards)
+    console.log(taskCards, cards)
 
     const moveCard = useCallback(
         (dragIndex, hoverIndex) => {
@@ -40,15 +40,13 @@ const CardList = ({cards, cardOrder, file, updateOrder, createCard, octokit}) =>
 
     const renderCard = (item, index) => {
         return(
-            <ListGroup.Item className = "card" key={item.id} id = {item.id} octokit={octokit}>
+            <ListGroup.Item className = "card" key={item.id} id = {item.id}>
                 <CardItem 
                     id = {item.id}
                     card = {item}
                     index = {index}
-                    cardOrder = {cardOrder}
                     moveCard = {moveCard}
                     setOrder = {updateOrder}
-                    file = {file}
                     />
            </ListGroup.Item>  
         )
@@ -87,8 +85,8 @@ const mapStateToProps = (state) => {
         user: state.auth.user,
         accessToken: state.auth.accessToken,
         cards: state.card.cards,
-        cardOrder: state.card.cardOrder,
-        file:state.card.file
+        cardOrder: state.card.cardOrder
+    
     }
 }
 

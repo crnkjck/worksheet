@@ -1,10 +1,10 @@
 import React from 'react';
 import {Navbar, Button,Nav,NavDropdown} from "react-bootstrap";
 import { LinkContainer } from 'react-router-bootstrap'
-import { githubSignin,githubSignout } from "../../store/actions/authActions";
+import { githubSignin,githubSignout, localStorageSignin } from "../../store/actions/authActions";
 import {connect} from "react-redux";
 
-const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state}) => {
+const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state,localStorageSignin }) => {
 
     return(
        <Navbar bg="dark" variant= "dark" expand="lg">
@@ -12,23 +12,21 @@ const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state}) =
                 <Navbar.Brand className="text-white">Matematika 4</Navbar.Brand>
             </LinkContainer>
             <Nav className="mr-auto">
-                <LinkContainer to = '/'>
-                    <Nav.Link className="text-white">Domov</Nav.Link>
-                </LinkContainer>
-                <LinkContainer to = '/tasks'>
-                    <Nav.Link className="text-white">Úlohy</Nav.Link>
-                </LinkContainer>
                 <LinkContainer to = '/notice'>
                     <Nav.Link className="text-white">Oznámenia</Nav.Link>
                 </LinkContainer>
-                <LinkContainer to = '/repo'>
-                    <Nav.Link className="text-white">Repozitáre</Nav.Link>
-                </LinkContainer>
             </Nav>
-            <Button onClick={() => console.log(user)}>User</Button>
-            <Button onClick={() => console.log(cardOrder)}>Order</Button>
-            <Button onClick={() => console.log(cards)}>Cards</Button>
-            <Button onClick={() => console.log(state)}>State</Button>
+            {/*
+                <Button onClick={() => console.log(user)} disabled={cards.working}>User</Button>
+                <Button onClick={() => console.log(cardOrder)}>Order</Button>
+                <Button onClick={() => console.log(cards)}>Cards</Button>
+                <Button onClick={() => console.log(state)}>State</Button>
+                <Button onClick={() => console.log(JSON.parse(localStorage.getItem("user")))}>localStorage</Button>
+                <Button onClick={() => console.log(Date.now())}>Test</Button>*/
+                <Button onClick={() => console.log(state)}>State</Button>
+            }
+            
+
             <Nav className="xs-2">
                 {
                 user ? 
@@ -50,7 +48,8 @@ const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state}) =
 const mapDispatchToProps = (dispatch) => {
     return {
         githubSignin: () => dispatch(githubSignin()),
-        githubSignout: () => dispatch(githubSignout())        
+        githubSignout: () => dispatch(githubSignout()),
+        localStorageSignin: () => dispatch(localStorageSignin())    
         
     }
 }

@@ -1,4 +1,4 @@
-import React, { useState }  from 'react'
+import React, { useState, useEffect }  from 'react'
 import {connect} from "react-redux";
 import {Card, ListGroup} from "react-bootstrap";
 import { Base64 } from 'js-base64';
@@ -6,26 +6,28 @@ import {loadCards} from "../../store/actions/cardActions"
 import {loadFile} from "../../store/actions/repoActions"
 
 
-const Repo = ({item,octokit,currentBranch,repoContents, addToPath, loadCards,loadFile}) => {
-    //const [repoContents,setRepoContents] = useState([])
-    const [repoDetail, setRepoDetail] = useState([])
-    var currentRepo = null
-
+const Repo = ({repo, octokit, addToPath, loadCards, loadFile,match}) => {
+    console.log(match)
+    var readme = null
     const getRepoReadme = async () =>{
-        var {data} = await octokit.repos.getContents({
-            owner: item.owner.login,
-            repo: item.name,
-            ref: currentBranch,
-            path: "README.md",
-            mediaType:{
-                format:"html"
-            }
-          })
-          
-          setRepoDetail(data) 
+        loadFile(repo, readme, "README.md", "html", octokit)
     }
 
+    useEffect(() => {
+        try{
+            if(repo.currentFile === null){
+                getRepoReadme()
+            } 
+        }catch(e){
+            console.log(e)
+            console.log("No README.md in this folder")
+        }
+    }, [])
+
     const renderListItem = (e) => {
+        if(e.name === "README.md"){
+            readme = e
+        }
         return(
             <ListGroup.Item key={e.sha} onClick={()=>renderItemInfo(e)}>
                 {e.name}
@@ -34,55 +36,37 @@ const Repo = ({item,octokit,currentBranch,repoContents, addToPath, loadCards,loa
     }
 
     const renderItemInfo = async (e) => {
-        //console.log(e)
         if(e.type === "dir"){
             addToPath(e.path)
         }else{
-            await octokit.repos.getContents({
-                owner:item.owner.login,
-                repo:item.name,
-                path:e.path,
-                ref:currentBranch,
-                mediaType:{
-                    format:"raw"
-                }
-                }).then((item) => {
-                    try{
-                        loadFile(e)
-                        loadCards(item,e)             
-                    }catch(err){
-                        console.log(err)
-                        setRepoDetail(item.data) 
-                    }
-                });
-            //setRepoDetail(data)  
+            if(e.name.includes(".json")){
+                loadFile(repo, e, e.path, "raw", octokit)
+            }else{
+                loadFile(repo, e, e.path, "html", octokit)
+            }           
         }
     }
 
 
-    try{
-        getRepoReadme()
-    }catch(e){
-        console.log(e)
-        console.log("No README.md in this folder")
-    }
+   
     
     return(
             <Card bg="white" text="black" >
 
                     <Card.Body>
                         <ListGroup variant="flush">
-                            {repoContents && repoContents.map( (e) => {
+                            {repo.currentRepoData && repo.currentRepoData.map( (e) => {
                                 return( 
                                     renderListItem(e)
                                 )
                             })}
                         </ListGroup>
                     {
-                        repoDetail.length ? 
-                            <div dangerouslySetInnerHTML={{__html:repoDetail}}/>       
+                        repo.currentFileContent ? 
+                            <div dangerouslySetInnerHTML={{__html: repo.currentFileContent.data}}/> 
+                                  
                         :
-                            null
+                            null 
                     }
                     </Card.Body>              
             </Card> 
@@ -94,9 +78,17 @@ const Repo = ({item,octokit,currentBranch,repoContents, addToPath, loadCards,loa
 const mapDispatchToProps = (dispatch) => {
     return {
         loadCards: (item) => dispatch(loadCards(item)),
-        loadFile: (file) => dispatch(loadFile(file))
+        loadFile: (repo, file, path, format, octokit) => dispatch(loadFile(repo, file, path, format, octokit))
     }
 }
 
-export default connect(null,mapDispatchToProps)(Repo)
+
+const mapStateToProps = (state) => {
+    return {
+        repo: state.repo,
+        octokit: state.auth.octokit
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Repo)
 

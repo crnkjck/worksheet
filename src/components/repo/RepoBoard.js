@@ -8,9 +8,16 @@ import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 
 import {updateRepo, findUserRepos, resetRepoData, setCurrentRepo, setCurrentRepoData} from "../../store/actions/repoActions"
+import { Route} from "react-router-dom";
 
 
 class RepoBoard extends Component{
+    constructor(props) {
+        super(props);
+        console.log(props)
+        this.routeParam = props.match.params.parameterToAccess;
+        
+      }
 
     componentDidMount(){
         console.log("mounted", this.props)
@@ -21,7 +28,7 @@ class RepoBoard extends Component{
 
 
     componentDidUpdate(prevProps) {
-        console.log(this.props)
+        //console.log(this.props)
         if((this.props.user !== prevProps.user)){
             if(this.props.user.accessToken !== ""){  
                 this.props.findUserRepos(this.props.octokit)        
@@ -67,9 +74,10 @@ class RepoBoard extends Component{
 
     render(){
         console.log()
+        
+        console.log(this.history)
         var {user, repo} = this.props
         var pathArr = repo.path.split("/")
-        console.log(this.props)
 
         if(user.accessToken === ""){
             return(
@@ -89,7 +97,7 @@ class RepoBoard extends Component{
                 </Container>
             )
         }else{
-            console.log("RepoBoard ", this.repo)
+            //console.log("RepoBoard ", repo)
         return(   
             <Container>
                 <Row>
@@ -98,7 +106,7 @@ class RepoBoard extends Component{
                     <Col className = "repoNav" sm = {"auto"}>   
                         {
                         repo.repoList.length ?
-                                <DropdownButton  id="repo-dropdown-button" title={repo.currentRepo ? repo.currentRepo.name:"Repos" }>
+                                <DropdownButton  id="repo-dropdown-button" title={repo.currentRepo ? repo.currentRepo.name:"Repos" } size="lg">
                                     {
                                         repo.repoList && repo.repoList.map((item,i) => {
                                             return( 
@@ -114,7 +122,7 @@ class RepoBoard extends Component{
                     <Col className = "repoNav" sm={"auto"}>
                         {
                         repo.branchList.length ?
-                                <DropdownButton  id="repo-dropdown-button" title={repo.currentBranch ? repo.currentBranch.name:"Branch" }>
+                                <DropdownButton  id="repo-dropdown-button" title={repo.currentBranch ? repo.currentBranch.name:"Branch" } size="lg">
                                     {
                                         repo.branchList && repo.branchList.map((item,i) => {
                                             return( 
@@ -150,8 +158,10 @@ class RepoBoard extends Component{
                     </Col>     
                     <Col sm = {10}>   
                         {
-                            repo.currentRepo ?
-                                <Repo item = {repo.currentRepo} octokit={this.props.octokit} currentBranch={repo.currentBranch.name} repoContents={repo.currentRepoData} addToPath={this.addToPath} />
+                            repo.currentBranch ?
+                            <Route path={repo.path} render={(props) => <Repo {...props} addToPath={this.addToPath} />}>
+                               
+                            </Route>
                             :
                             null
                         } 
@@ -163,7 +173,7 @@ class RepoBoard extends Component{
                     </Col>  
                     <Col sm={10}>
                         <DndProvider backend={Backend}>
-                            <CardList octokit={this.props.octokit}/> 
+                            <CardList/> 
                         </DndProvider>
                     </Col>
                 </Row>
