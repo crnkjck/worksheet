@@ -15,8 +15,8 @@ import {localStorageSignin} from "./store/actions/authActions"
 class App extends Component {
   constructor(props){
     super(props);
-
-    var remember = localStorage.getItem("user") != null
+   // localStorage.setItem("user", null)
+    var remember = localStorage.getItem("user") !== "null"
     remember ? this.props.localStorageSignin() : console.log("niesi prihlaseny")
   }
 

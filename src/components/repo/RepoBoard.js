@@ -8,16 +8,10 @@ import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 
 import {updateRepo, findUserRepos, resetRepoData, setCurrentRepo, setCurrentRepoData} from "../../store/actions/repoActions"
-import { Route} from "react-router-dom";
+import {BrowserRouter as Router, Route} from "react-router-dom";
 
 
 class RepoBoard extends Component{
-    constructor(props) {
-        super(props);
-        console.log(props)
-        this.routeParam = props.match.params.parameterToAccess;
-        
-      }
 
     componentDidMount(){
         console.log("mounted", this.props)
@@ -72,10 +66,26 @@ class RepoBoard extends Component{
     }
 
 
+
+
+
+
+    getParams(location) {
+        const searchParams = new URLSearchParams(location.search);
+        return {
+          query: searchParams.get("query") || "",
+        };
+      }
+
+
+
+
+
     render(){
         console.log()
+
+        console.log(this.getParams("www.first-contrib.fr?query=react"))
         
-        console.log(this.history)
         var {user, repo} = this.props
         var pathArr = repo.path.split("/")
 
@@ -103,7 +113,7 @@ class RepoBoard extends Component{
                 <Row>
                     <Col sm = {1}>  
                     </Col>     
-                    <Col className = "repoNav" sm = {"auto"}>   
+                    <Col className = "repoNav" xs = {"auto"}>   
                         {
                         repo.repoList.length ?
                                 <DropdownButton  id="repo-dropdown-button" title={repo.currentRepo ? repo.currentRepo.name:"Repos" } size="lg">
@@ -119,7 +129,7 @@ class RepoBoard extends Component{
                                 null
                         }
                     </Col>
-                    <Col className = "repoNav" sm={"auto"}>
+                    <Col className = "repoNav" xs={"auto"}>
                         {
                         repo.branchList.length ?
                                 <DropdownButton  id="repo-dropdown-button" title={repo.currentBranch ? repo.currentBranch.name:"Branch" } size="lg">
@@ -135,7 +145,7 @@ class RepoBoard extends Component{
                                 null
                             }
                     </Col>
-                    <Col className = "repoNav" sm={6}>
+                    <Col className = "repoNav" xs>
                         {
                         pathArr.length ?
                                 <Breadcrumb>
@@ -159,8 +169,8 @@ class RepoBoard extends Component{
                     <Col sm = {10}>   
                         {
                             repo.currentBranch ?
-                            <Route path={repo.path} render={(props) => <Repo {...props} addToPath={this.addToPath} />}>
-                               
+                            <Route path={repo.path}>
+                               <Repo addToPath={this.addToPath} />
                             </Route>
                             :
                             null

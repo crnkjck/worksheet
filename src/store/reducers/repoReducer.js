@@ -33,7 +33,6 @@ const repoReducer = (state = initState, action) => {
                 currentFile: action.currentFile
             }; 
         case "SET_REPO_LIST" : 
-            console.log("SET_REPO_LIST", action, state)
             return {
                 ...state,
                 repoList: action.repoList

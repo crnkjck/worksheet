@@ -5,9 +5,18 @@ import { Base64 } from 'js-base64';
 import {loadCards} from "../../store/actions/cardActions"
 import {loadFile} from "../../store/actions/repoActions"
 
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    useRouteMatch,
+    useParams
+  } from "react-router-dom";
 
-const Repo = ({repo, octokit, addToPath, loadCards, loadFile,match}) => {
-    console.log(match)
+
+const Repo = ({repo, octokit, addToPath, loadCards, loadFile}) => {
+    //console.log(match)
     var readme = null
     const getRepoReadme = async () =>{
         loadFile(repo, readme, "README.md", "html", octokit)
@@ -22,7 +31,7 @@ const Repo = ({repo, octokit, addToPath, loadCards, loadFile,match}) => {
             console.log(e)
             console.log("No README.md in this folder")
         }
-    }, [])
+    }, [repo])
 
     const renderListItem = (e) => {
         if(e.name === "README.md"){
@@ -30,7 +39,8 @@ const Repo = ({repo, octokit, addToPath, loadCards, loadFile,match}) => {
         }
         return(
             <ListGroup.Item key={e.sha} onClick={()=>renderItemInfo(e)}>
-                {e.name}
+                
+                <Link to={`/${e.name}`}>{e.name}</Link>
             </ListGroup.Item>
         )
     }
@@ -49,7 +59,8 @@ const Repo = ({repo, octokit, addToPath, loadCards, loadFile,match}) => {
 
 
    
-    
+    let match = useRouteMatch();
+    console.log(match)
     return(
             <Card bg="white" text="black" >
 

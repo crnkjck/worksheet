@@ -20,7 +20,7 @@ const CardList = ({cards, cardOrder, updateOrder}) => {
     cardOrder.map((item) => {
         taskCards = [...taskCards, cards.find(e => e.id === item)]
     })
-    console.log(taskCards, cards)
+
 
     const moveCard = useCallback(
         (dragIndex, hoverIndex) => {

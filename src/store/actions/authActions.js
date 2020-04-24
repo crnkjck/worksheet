@@ -55,7 +55,7 @@ export const githubSignout = () =>{
     return(dispatch)=>{
         firebase.auth().signOut()   
         .then(() => {
-            localStorage.setItem("user", null)
+            localStorage.setItem("user", "null")
             dispatch({
                 type:"LOGOUT_USER",    
             })   
