@@ -9,6 +9,7 @@ import RepoWrapper from './components/repo/RepoWrapper';
 import RepoBoard from './components/repo/RepoBoard';
 import firebase from "firebase/app"
 import {localStorageSignin} from "./store/actions/authActions"
+import {pathToRegexp} from "path-to-regexp"
 
 
 
@@ -27,8 +28,13 @@ class App extends Component {
         <div className="App">
           <Navbar/>
           <Switch>
-            <Route exact path = "/" component={RepoBoard}/>
-            <Route path = "/notice" component={NoticeBoard}/>
+
+            <Route path = "/:repo?/:branch?/:path*" component={RepoBoard}/>
+            {
+              //<Route path = "/:repo?/:branch?/:path*" component={RepoBoard}/>
+            //<Route path = "/notice" component={NoticeBoard}/>
+            }
+            
             
           </Switch>
         </div>

@@ -12,11 +12,15 @@ const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state,loc
                 <Navbar.Brand className="text-white">Matematika 4</Navbar.Brand>
             </LinkContainer>
             <Nav className="mr-auto">
+            
+            </Nav>
+            {/*
+            <Nav className="mr-auto">
                 <LinkContainer to = '/notice'>
                     <Nav.Link className="text-white">Oznámenia</Nav.Link>
                 </LinkContainer>
             </Nav>
-            {/*
+            
                 <Button onClick={() => console.log(user)} disabled={cards.working}>User</Button>
                 <Button onClick={() => console.log(cardOrder)}>Order</Button>
                 <Button onClick={() => console.log(cards)}>Cards</Button>

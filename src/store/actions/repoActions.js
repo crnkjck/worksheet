@@ -36,7 +36,7 @@ export const setCurrentRepo = (repo, octokit) => {
             dispatch({
                 type:"CLOSE_CARDS"
             })
-            dispatch(setCurrentRepoData(repo,{name:"master"},"", octokit))
+            //dispatch(setCurrentRepoData(repo,{name:"master"},"", octokit))
         }).catch((e) => {
             console.log(e)
         })
@@ -54,6 +54,7 @@ export const setCurrentRepoData = (currentRepo, branch, path, octokit) => {
             ref: branch.name,
             path: path
         }).then((result) => {
+            console.log(result)
             result.data.map( (item) => {
                 tempData = [...tempData,item]
             })  
@@ -107,6 +108,7 @@ export const loadFile = (repo, file, path, format, octokit) => {
                 format: format
             }
         }).then((result) => {
+            console.log(result)
             var cardJson = false
             try{
                 var parsedItem = JSON.parse(result.data)

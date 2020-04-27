@@ -8,6 +8,7 @@
     "firebase": "^7.13.1",
     "immutability-helper": "^3.0.1",
     "js-base64": "^2.5.2",
+    "path-to-regexp": "^6.1.0",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.0",
     "react-dnd": "^9.5.1",
