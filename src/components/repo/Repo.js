@@ -44,7 +44,10 @@ const Repo = (props) => {
         
     }, [url])
 
-
+/**
+ * Returns each item from repo as Link to render
+ * @param {*} e 
+ */
     const renderListItem = (e) => {
         if(e.name === "README.md"){
             readme = e
@@ -53,7 +56,7 @@ const Repo = (props) => {
             <ListGroup.Item key={e.sha} onClick={null/*()=>renderItemInfo(e)*/}>
                 {
                     e.type === "dir" ?
-                        <Link to={generateFolderLink(e)}>{e.name}</Link>
+                        <Link to={generateFolderLink(e)}>{e.name}/</Link>
                         //<Link to={`${props.match.url}/${e.name}`}>{e.name}</Link>
                     :
                         //<Link to={`${props.match.url}/${e.name}`}>{e.name}</Link>
@@ -64,12 +67,25 @@ const Repo = (props) => {
         )
     }
 
+/**
+ * Generate router Link for folder type, custom routing
+ * @param {*} e 
+ */
     const generateFolderLink = (e) =>{
         var link = `/${match.params.repo}/${match.params.branch}`
+// If route is in root, add item to url
         if(match.params.path === undefined){
             link = link + `/${e.name}`
         }else{
-            link = link +"/" + match.params.path + `/${e.name}`
+// If route is nested and no file is opened, add folder to url
+            if(repo.currentFile === null){
+                link = link +"/" + match.params.path + `/${e.name}`
+// If route is nested and file is opened, replace it with clicked folder                
+            }else{
+                var pathArr = this.props.repo.path.split("/")
+                var index = pathArr.findIndex(x => x === e)
+            }
+            
         }
         //console.log(link,repo)
         /*
@@ -98,11 +114,16 @@ const Repo = (props) => {
         )
     }
 
+/**
+ * Generate router Link for file type, custom routing
+ * @param {*} e 
+ */
     const generateFileLink = (e) => {
         var link = `/${match.params.repo}/${match.params.branch}`
+// If route is in root, add item name to path
         if(match.params.path === undefined || match.params.path === ""){
             link = link + `/${e.name}`
-            
+// If route is nested and last item in url is file replace it with clicked file             
         }else{
             var tmp = match.params.path.split("/")
             if(repo.currentFile){
@@ -111,7 +132,7 @@ const Repo = (props) => {
                 }
             }
   
-            var pathAsString = pathToString(tmp)
+            var pathAsString = pathToString(tmp)            
             if(pathAsString === ""){
                 link = link + `/${e.name}`
             }else{

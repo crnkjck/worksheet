@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 
-import {updateRepo, findUserRepos, resetRepoData, setCurrentRepo, setCurrentRepoData,loadFile} from "../../store/actions/repoActions"
+import {updateRepo, findUserRepos, resetRepoData, setCurrentRepo, setCurrentRepoData, loadFile, loadFromUrl} from "../../store/actions/repoActions"
 import {pathToRegexp} from "path-to-regexp"
 
 
@@ -23,7 +23,7 @@ class RepoBoard extends Component{
 
     componentDidMount(){
         console.log("mounted", this.props)
-
+// Load logged user repos
         if(this.props.user.accessToken !== ""){
             this.props.findUserRepos(this.props.octokit)
         }        
@@ -33,37 +33,51 @@ class RepoBoard extends Component{
     componentDidUpdate(prevProps) {
         var {match} = this.props
         var {repo} = this.props
-        console.log(match)
+        console.log(match,prevProps)
         //console.log(this.props, prevProps)
         
         if((this.props.user !== prevProps.user)){
+// Load user repos after login           
             if(this.props.user.accessToken !== ""){  
                 this.props.findUserRepos(this.props.octokit)        
             }else{
                 this.props.resetRepoData()
             }    
         }
-        if((match.url !== prevProps.match.url)){
-            this.setDataFromURL() 
+     
+// On url change load new folder/file        
+        if((match.url !== prevProps.match.url)){    
+            this.setDataFromURL(prevProps) 
         }else{
-            if((match.params.repo && repo.currentRepo === "") || (match.params.branch && repo.currentBranch === "")){
-                this.setDataFromURL() 
+// Load repo, branch and folder from URL
+            if((match.params.repo && repo.currentRepo === "") || (match.params.branch && repo.currentBranch === "") || (match.params.path && repo.path === "")){    
+                console.log("Pustil som sa")
+                this.setDataFromURL(prevProps) 
+// When loading file (not only folder) from url, to load the file, not only folder            
+            }else if(match.params.path !== repo.path){      
+                this.setDataFromURL(prevProps) 
             }
         }
     } 
- 
-    setDataFromURL(){
+
+/**
+ * Handle setting current folder or file from URL
+ * @param {*} prevProps 
+ */    
+    setDataFromURL(prevProps){
         var {params} = this.props.match
         var {repo} = this.props
-        //console.log(params, repo)
+        console.log(params, repo)
+// Set repo from URL
         if((params.repo !== repo.currentRepo.name) || (params.repo && repo.currentRepo ==="")){
+            console.log("repo stuff")
             var repoItem = repo.repoList.find(e => e.name === params.repo)
             if(repoItem){
                 this.props.setCurrentRepo(repoItem, this.props.octokit)
             }
-            
-        }
-        if(params.branch !== repo.currentBranch.name){
+// Set branch from URL            
+        }else if(params.branch !== repo.currentBranch.name){
+            console.log("branch stuff")
             if(params.branch !== undefined){
                 var branchItem = repo.branchList.find(e => e.name === params.branch)
                 if(branchItem){
@@ -71,37 +85,62 @@ class RepoBoard extends Component{
                 }     
             }
         }
-
-        else{
-            if(params.path !== undefined){
+// Set folder/file from URL
+        else if(params.path !== repo.path){
+            console.log("file stuff")
+            if(params.path !== undefined){  
+// Find file with same path as URL path in current repo
                 var dataItem = repo.currentRepoData.find(e => e.path === params.path)
+             
                 console.log(dataItem)
-                if(dataItem.type === "file"){
-                    if(dataItem.name.includes(".json")){
-                        this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "raw", this.props.octokit)
+                if(dataItem !== undefined){
+// In case of file load it to currentFile
+                    if(dataItem.type === "file" ){
+                        if(repo.currentFile){
+// If file is already opened, do nothing
+                            if(dataItem.name === repo.currentFile.name){
+                                return
+                            }
+                        }
+                       
+                        if(dataItem.name.includes(".json")){
+                            this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "raw", this.props.octokit)
+                        }else{
+                            this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "html", this.props.octokit)
+                        }
+// If folder load it to currentRepoData                     
                     }else{
-                        this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "html", this.props.octokit)
-                    }      
-                }else{
-                    this.addToPath(params.path)
-                }
+                        this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, params.path, this.props.octokit)  
+                    }
+                     
+                
                 //this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, params.path, this.props.octokit)   
-                    
+                }else if(dataItem === undefined && params.path !== "" && !repo.currentFile){
+                    console.log("Nejaku divnu vec robim", this.props.repo)
+                    this.props.loadFromUrl(this.props.repo, this.props.repo.currentBranch, params.path, this.props.octokit)
+                }       
             }
         }
     }
 
 
+/**
+ * Set current branch
+ */
     setCurrentBranch = (branch) => {
         this.props.setCurrentRepoData(this.props.repo.currentRepo, branch, this.props.repo.path, this.props.octokit)   
     }
   
-
+/**
+ * Set new path in repo
+ */
     addToPath = (path) => {
         this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, path, this.props.octokit)   
     }
 
-
+/**
+ * Create string from path in Array
+ */
     pathToString = (e) => {
         var x = e.reduce((result, item) => {
             return `${result}${item}/`
@@ -112,16 +151,28 @@ class RepoBoard extends Component{
           return x  
     }
 
-
+/**
+ * Create Link for breadcrumbs
+ */
     breadcrumbsNav = (e) => {
-        var pathArr = this.props.repo.path.split("/")
+        var {params} = this.props.match
+        var link = `/${params.repo}/${params.branch}`
+
+        var pathArr = this.props.match.params.path.split("/")
         var index = pathArr.findIndex(x => x === e)
-
+        
         pathArr = pathArr.slice(0,index+1)
-  
+     
         var newPath = this.pathToString(pathArr)
+        if(newPath !== ""){
+            link = link + "/"
+        }
+        link = link + newPath
+        return(
+            link
+        )
 
-        this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, newPath, this.props.octokit)   
+        //this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, newPath, this.props.octokit)   
     }
 
     
@@ -154,8 +205,8 @@ class RepoBoard extends Component{
         return(   
             <Container>
                 <Row>
-                    <Col sm = {1}>  
-                    </Col>     
+                    <Col sm = {1}/>  
+        
                     <Col className = "repoNav" xs = {"auto"}>   
                         {
                         repo.repoList.length ?
@@ -194,13 +245,17 @@ class RepoBoard extends Component{
                     </Col>
                     <Col className = "repoNav" xs>
                         {
-                        pathArr.length ?
+                        params.path ?
                                 <Breadcrumb>
-                                    <Breadcrumb.Item onClick={() => this.breadcrumbsNav("")}>{repo.currentBranch.name}</Breadcrumb.Item>                                          
+                                    <Breadcrumb.Item href={`/${params.repo}/${params.branch}`}>
+                                        {params.branch}
+                                    </Breadcrumb.Item>                                          
                                     {
-                                        pathArr && pathArr.map((item,i) => {
+                                        params.path && params.path.split("/").map((item,i) => {
                                             return( 
-                                                <Breadcrumb.Item key={item} onClick={() => this.breadcrumbsNav(item)}>{item}</Breadcrumb.Item>  )
+                                                <Breadcrumb.Item key={item} href={this.breadcrumbsNav(item)}> 
+                                                    {item}
+                                                </Breadcrumb.Item>  )
                                         })
                                     }
                                 </Breadcrumb>
@@ -211,8 +266,8 @@ class RepoBoard extends Component{
                 </Row>
 
                 <Row>
-                    <Col sm = {1}>  
-                    </Col>     
+                    <Col sm = {1}/>  
+                        
                     <Col sm = {10}>   
                         {
                             repo.currentBranch ?
@@ -228,8 +283,8 @@ class RepoBoard extends Component{
                 </Row>
 
                 <Row>
-                    <Col sm = {1}>  
-                    </Col>  
+                    <Col sm = {1}/>  
+                     
                     <Col sm={10}>
                         <DndProvider backend={Backend}>
                             <CardList/> 
@@ -259,8 +314,8 @@ const mapDispatchToProps = (dispatch) => {
         resetRepoData: () => dispatch(resetRepoData()),
         setCurrentRepo: (repo, octokit) => dispatch(setCurrentRepo(repo, octokit)),
         setCurrentRepoData: (currentRepo, branch, path, octokit) => (dispatch(setCurrentRepoData(currentRepo, branch, path, octokit))),
-        loadFile: (repo, file, path, format, octokit) => dispatch(loadFile(repo, file, path, format, octokit))
-
+        loadFile: (repo, file, path, format, octokit) => dispatch(loadFile(repo, file, path, format, octokit)),
+        loadFromUrl: (repo, file, path, format, octokit) => dispatch(loadFromUrl(repo, file, path, format, octokit))
     }
 }
 

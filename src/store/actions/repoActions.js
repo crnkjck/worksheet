@@ -54,7 +54,7 @@ export const setCurrentRepoData = (currentRepo, branch, path, octokit) => {
             ref: branch.name,
             path: path
         }).then((result) => {
-            console.log(result)
+            //console.log(result)
             result.data.map( (item) => {
                 tempData = [...tempData,item]
             })  
@@ -70,7 +70,7 @@ export const setCurrentRepoData = (currentRepo, branch, path, octokit) => {
             })
         }).catch((e) => {
             console.log(e)
-            alert("File does not exists in this branch")
+            alert("File does not exist in this branch")
         })
     }   
 }
@@ -98,6 +98,7 @@ export const updateRepo = (item) => {
 
 
 export const loadFile = (repo, file, path, format, octokit) => {
+    console.log("nacitam subory")
     return  (dispatch) => {
         octokit.repos.getContents({
             owner: repo.currentRepo.owner.login,
@@ -108,7 +109,7 @@ export const loadFile = (repo, file, path, format, octokit) => {
                 format: format
             }
         }).then((result) => {
-            console.log(result)
+            //console.log(result)
             var cardJson = false
             try{
                 var parsedItem = JSON.parse(result.data)
@@ -140,6 +141,54 @@ export const loadFile = (repo, file, path, format, octokit) => {
     }
 }
 
+
+export const loadFromUrl = (repo, branch, path, octokit) => {
+    var tempData = []
+
+    return  (dispatch) => {
+        octokit.repos.getContents({
+            owner: repo.currentRepo.owner.login,
+            repo: repo.currentRepo.name,
+            ref: branch.name,
+            path: path
+        }).then((result) => {
+            //console.log(typeof result.data, Array.isArray(result.data), result)
+            if(Array.isArray(result.data)){
+                /*
+                result.data.map( (item) => {
+                    tempData = [...tempData,item]
+                })  
+    
+                dispatch({
+                    type: "SET_CURRENT_REPO_DATA",
+                    currentBranch: branch,
+                    currentRepoData: tempData,
+                    path: path
+                })*/
+
+                dispatch(setCurrentRepoData(repo.currentRepo,branch, path, octokit))
+            }else{
+                var tmp = path.split("/")
+                tmp.pop()
+
+                var x = tmp.reduce((result, item) => {
+                    return `${result}${item}/`
+                  }, "")
+                  if(x[x.length - 1] === "/"){     
+                    x = x.slice(0,x.length-1)
+                  }
+
+                dispatch(setCurrentRepoData(repo.currentRepo,branch, x, octokit))
+                //dispatch(loadFile(repo, result, path, "raw", octokit))
+            }
+            
+            
+        }).catch((e) => {
+            console.log(e)
+            alert("File not found")
+        })
+    }   
+}
 
 
 export const resetRepoData = () => {
