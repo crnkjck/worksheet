@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Navbar, Button,Nav,NavDropdown} from "react-bootstrap";
 import { LinkContainer } from 'react-router-bootstrap'
 import { githubSignin,githubSignout, localStorageSignin } from "../../store/actions/authActions";
 import {connect} from "react-redux";
 
 const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state,localStorageSignin }) => {
+    
+    //console.log("NAVIGATION LOADED")
+    /*
+    const [x,xs] = useState({
+        zvierata:[
+                {nazov: "ovca",
+                pocet: 0},
+                {nazov: "sliepka",
+                pocet: 0}]
+    })
 
+    const [x,xs] = useState({
+        ovca:0,
+        sliepka:0
+    })
+    
+    const pridajZviera = (zviera) => {
+        xs({zvierata: x.zvierata.map(item => (item.nazov === zviera ? {nazov: zviera, pocet: item.pocet + 1}: item)) })    
+    }
+    */
     return(
        <Navbar bg="dark" variant= "dark" expand="lg">
             <LinkContainer to = '/'>
@@ -27,6 +46,7 @@ const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state,loc
                 <Button onClick={() => console.log(state)}>State</Button>
                 <Button onClick={() => console.log(JSON.parse(localStorage.getItem("user")))}>localStorage</Button>
                 <Button onClick={() => console.log(Date.now())}>Test</Button>*/
+               
                 <Button onClick={() => console.log(state)}>State</Button>
             }
             

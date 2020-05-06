@@ -27,7 +27,7 @@ const Repo = (props) => {
 
 
     useEffect(() => {
-        console.log("repo effect works too", match)
+        //console.log("repo effect works too", match)
         if(match.params.path !== undefined){
             var file = repo.currentRepoData.find(e => e.path === match.params.path)
         
@@ -44,6 +44,7 @@ const Repo = (props) => {
         
     }, [url])
 
+    
 /**
  * Returns each item from repo as Link to render
  * @param {*} e 
@@ -57,9 +58,7 @@ const Repo = (props) => {
                 {
                     e.type === "dir" ?
                         <Link to={generateFolderLink(e)}>{e.name}/</Link>
-                        //<Link to={`${props.match.url}/${e.name}`}>{e.name}</Link>
                     :
-                        //<Link to={`${props.match.url}/${e.name}`}>{e.name}</Link>
                         <Link to={generateFileLink(e)/*`/${match.params.repo}/${match.params.branch}/${match.params.path ? match.params.path+"/":""}${e.name}`*/}>{e.name}</Link>
                 }
                 
@@ -67,8 +66,9 @@ const Repo = (props) => {
         )
     }
 
+
 /**
- * Generate router Link for folder type, custom routing
+ * Generate router Link for folder type, custom links
  * @param {*} e 
  */
     const generateFolderLink = (e) =>{
@@ -82,40 +82,26 @@ const Repo = (props) => {
                 link = link +"/" + match.params.path + `/${e.name}`
 // If route is nested and file is opened, replace it with clicked folder                
             }else{
-                var pathArr = this.props.repo.path.split("/")
-                var index = pathArr.findIndex(x => x === e)
-            }
-            
-        }
-        //console.log(link,repo)
-        /*
-        if(match.params.path === undefined){
-            link = link + `/${e.name}`
-            console.log(link)
-        }else{
-            if(repo.currentFile){
-                if(repo.currentFile.type === "dir"){
-                    link = link + `/${match.params.path}/${e.name}`
-                }else{
-                    var tmp = match.params.path.split("/")
-                    tmp.pop()
-                    
-                    var pathAsString = pathToString(tmp)
-                    
-                    link = link + pathAsString + `/${e.name}`
-                    console.log(link)
-                }
-        }
-    }*/
-    
+                var pathArr = match.params.path.split("/")
+                pathArr.pop()
 
+                var pathAsString = pathToString(pathArr) 
+                if(pathAsString === ""){
+                    link = link + `/${e.name}`
+                }else{
+                    link = link + "/" + pathAsString + `/${e.name}`
+                }
+            }
+   
+        }
         return(            
-            `${link}`
+            link
         )
     }
 
+
 /**
- * Generate router Link for file type, custom routing
+ * Generate router Link for file type, custom links
  * @param {*} e 
  */
     const generateFileLink = (e) => {
@@ -137,17 +123,15 @@ const Repo = (props) => {
                 link = link + `/${e.name}`
             }else{
                 link = link + "/" + pathAsString + `/${e.name}`
-            }
-            
-            
+            }       
         }
         //console.log(link)
         return(            
-            `${link}`
+            link
         )
     }
    
-
+/*
     const renderItemInfo = async (e) => {
         if(e.type === "dir"){
             addToPath(e.path)
@@ -159,7 +143,7 @@ const Repo = (props) => {
             }           
         }
     }
-
+*/
 
    
     

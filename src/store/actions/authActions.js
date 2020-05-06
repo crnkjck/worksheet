@@ -8,7 +8,7 @@ export const localStorageSignin = () => {
     return(dispatch) =>{
         var octokit = new Octokit({
             auth: user.credential.oauthAccessToken,
-            userAgent: "NikolajKn",
+            userAgent: "Mathematics4",
             baseUrl: "https://api.github.com"
         }) 
         dispatch({
@@ -30,7 +30,7 @@ export const githubSignin = () =>{
 
             var octokit = new Octokit({
                 auth: result.credential.accessToken,
-                userAgent: "NikolajKn",
+                userAgent: "Mathematics4",
                 baseUrl: "https://api.github.com"
             }) 
             dispatch({

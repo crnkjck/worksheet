@@ -24,14 +24,15 @@ export const setCurrentRepo = (repo, octokit) => {
             owner: repo.owner.login,
             repo: repo.name,        
         }).then((result) => {
+            console.log(result)
             result.data.map((item) => {
                 tempData = [...tempData,item]
             })
-
+            console.log(tempData)
             dispatch({
                 type: "SET_CURRENT_REPO",
                 currentRepo: repo,
-                branchList: tempData
+                branchList: result.data
             })
             dispatch({
                 type:"CLOSE_CARDS"
@@ -62,7 +63,7 @@ export const setCurrentRepoData = (currentRepo, branch, path, octokit) => {
             dispatch({
                 type: "SET_CURRENT_REPO_DATA",
                 currentBranch: branch,
-                currentRepoData: tempData,
+                currentRepoData: result.data,
                 path: path
             })
             dispatch({
@@ -98,7 +99,6 @@ export const updateRepo = (item) => {
 
 
 export const loadFile = (repo, file, path, format, octokit) => {
-    console.log("nacitam subory")
     return  (dispatch) => {
         octokit.repos.getContents({
             owner: repo.currentRepo.owner.login,
@@ -107,9 +107,12 @@ export const loadFile = (repo, file, path, format, octokit) => {
             ref: repo.currentBranch.name,
             mediaType: {
                 format: format
-            }
+            },
+            headers: {
+                'If-None-Match': ''
+              }
         }).then((result) => {
-            //console.log(result)
+            console.log(result)
             var cardJson = false
             try{
                 var parsedItem = JSON.parse(result.data)
@@ -120,6 +123,7 @@ export const loadFile = (repo, file, path, format, octokit) => {
             
             if(cardJson){
                 dispatch(loadCards(repo,result))
+                
                 dispatch({
                     type: "LOAD_FILE",
                     currentFile: file,

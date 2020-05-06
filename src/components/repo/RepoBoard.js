@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Container, Row, Col, Form, Button, DropdownButton, Dropdown, Breadcrumb, ListGroup} from "react-bootstrap";
 import Repo from "./Repo"
-import CardList from "../todo/CardList"
+import CardList from "../card/CardList"
 import {connect} from "react-redux";
 
 import { DndProvider } from 'react-dnd'
@@ -10,6 +10,7 @@ import Backend from 'react-dnd-html5-backend'
 import {updateRepo, findUserRepos, resetRepoData, setCurrentRepo, setCurrentRepoData, loadFile, loadFromUrl} from "../../store/actions/repoActions"
 import {pathToRegexp} from "path-to-regexp"
 
+//import Elm from 'react-elm-components'
 
 import {
     BrowserRouter as Router,
@@ -28,12 +29,12 @@ class RepoBoard extends Component{
             this.props.findUserRepos(this.props.octokit)
         }        
     }
-
+ 
 
     componentDidUpdate(prevProps) {
         var {match} = this.props
         var {repo} = this.props
-        console.log(match,prevProps)
+        //console.log(match,prevProps)
         //console.log(this.props, prevProps)
         
         if((this.props.user !== prevProps.user)){
@@ -51,7 +52,6 @@ class RepoBoard extends Component{
         }else{
 // Load repo, branch and folder from URL
             if((match.params.repo && repo.currentRepo === "") || (match.params.branch && repo.currentBranch === "") || (match.params.path && repo.path === "")){    
-                console.log("Pustil som sa")
                 this.setDataFromURL(prevProps) 
 // When loading file (not only folder) from url, to load the file, not only folder            
             }else if(match.params.path !== repo.path){      
@@ -67,17 +67,17 @@ class RepoBoard extends Component{
     setDataFromURL(prevProps){
         var {params} = this.props.match
         var {repo} = this.props
-        console.log(params, repo)
+        //console.log(params, repo)
 // Set repo from URL
         if((params.repo !== repo.currentRepo.name) || (params.repo && repo.currentRepo ==="")){
-            console.log("repo stuff")
+            //console.log("repo stuff")
             var repoItem = repo.repoList.find(e => e.name === params.repo)
             if(repoItem){
                 this.props.setCurrentRepo(repoItem, this.props.octokit)
             }
 // Set branch from URL            
         }else if(params.branch !== repo.currentBranch.name){
-            console.log("branch stuff")
+            //console.log("branch stuff")
             if(params.branch !== undefined){
                 var branchItem = repo.branchList.find(e => e.name === params.branch)
                 if(branchItem){
@@ -87,12 +87,12 @@ class RepoBoard extends Component{
         }
 // Set folder/file from URL
         else if(params.path !== repo.path){
-            console.log("file stuff")
+            //console.log("file stuff")
             if(params.path !== undefined){  
 // Find file with same path as URL path in current repo
                 var dataItem = repo.currentRepoData.find(e => e.path === params.path)
              
-                console.log(dataItem)
+                //console.log(dataItem)
                 if(dataItem !== undefined){
 // In case of file load it to currentFile
                     if(dataItem.type === "file" ){
@@ -116,7 +116,6 @@ class RepoBoard extends Component{
                 
                 //this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, params.path, this.props.octokit)   
                 }else if(dataItem === undefined && params.path !== "" && !repo.currentFile){
-                    console.log("Nejaku divnu vec robim", this.props.repo)
                     this.props.loadFromUrl(this.props.repo, this.props.repo.currentBranch, params.path, this.props.octokit)
                 }       
             }
@@ -214,8 +213,8 @@ class RepoBoard extends Component{
                                     {
                                         repo.repoList && repo.repoList.map((item,i) => {
                                             return( 
-                                                <Dropdown.Item key = {item.id} as="button" onClick={()=> console.log(item.name,"clicked")/*() => this.props.setCurrentRepo(item,this.props.octokit)*/}>
-                                                    <Link to={`/${item.name}`}>{item.name}</Link>
+                                                <Dropdown.Item key = {item.id} href={`/${item.name}`} onClick={()=> console.log(item.name,"clicked")/*() => this.props.setCurrentRepo(item,this.props.octokit)*/}>
+                                                    {item.name}
                                                 </Dropdown.Item>
                                             )
                                         })
@@ -232,8 +231,8 @@ class RepoBoard extends Component{
                                     {
                                         repo.branchList && repo.branchList.map((item,i) => {
                                             return( 
-                                                <Dropdown.Item key = {item.name} as="button" onClick={() => console.log(item.name,"branch clicked")/*this.setCurrentBranch(item)*/} >
-                                                   <Link to={`/${params.repo}/${item.name}`}>{item.name}</Link>
+                                                <Dropdown.Item key = {item.name} href={`/${params.repo}/${item.name}`} onClick={() => console.log(item.name,"branch clicked")/*this.setCurrentBranch(item)*/} >
+                                                   {item.name}
                                                 </Dropdown.Item>
                                             )
                                         })
@@ -279,6 +278,13 @@ class RepoBoard extends Component{
                             :
                             null
                         } 
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm = {1}/>  
+                        
+                    <Col sm={10}>
+                    
                     </Col>
                 </Row>
 

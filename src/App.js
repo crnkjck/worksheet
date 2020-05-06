@@ -2,15 +2,8 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import Navbar from './components/layout/Navigation';
-import DashWrapper from './components/dashboard/DashWrapper';
-import NoticeBoard from './components/notice/NoticeBoard.js';
-import Home from './components/home/Home.js';
-import RepoWrapper from './components/repo/RepoWrapper';
 import RepoBoard from './components/repo/RepoBoard';
-import firebase from "firebase/app"
 import {localStorageSignin} from "./store/actions/authActions"
-import {pathToRegexp} from "path-to-regexp"
-
 
 
 class App extends Component {

@@ -73,6 +73,7 @@ const repoReducer = (state = initState, action) => {
         case "RESET_REPO_DATA" :  
             return  {
                 ...state,
+                currentFileContent:null,
                 repoList:[],
                 currentRepo: "",
                 branchList:[],
@@ -80,6 +81,16 @@ const repoReducer = (state = initState, action) => {
                 currentRepoData:[],
                 path:""
             }; 
+        case "RESET_REPO_ON_FILE_OPEN" :  
+            return  {
+                ...state,
+                currentFileContent:null,
+                branchList:[],
+                currentBranch:"",
+                currentRepoData:[],
+                path:""
+            }; 
+
 
         
         default:

@@ -9,7 +9,7 @@ export const createCard = (cards, cardOrder, insertIndex, repo, octokit) => {
     console.log(tempOrder)
     var newCardArr = {type:"magic",cards: [...cards.cards, newCard], cardOrder: tempOrder }
     console.log(newCardArr)
-
+    console.log(repo)
     var content = Base64.encode(JSON.stringify(newCardArr))
 
     return  (dispatch) => {
@@ -24,7 +24,10 @@ export const createCard = (cards, cardOrder, insertIndex, repo, octokit) => {
         branch: repo.currentBranch.name,
         message: "...",
         sha: repo.currentFile.sha,
-        content: content 
+        content: content, 
+        headers: {
+            'If-None-Match': ''
+          }
         }).then((result) => {
             console.log(result)
             dispatch({
@@ -57,9 +60,8 @@ export const updateCard = (card, cards, repo, octokit) => {
         cardOrder: cards.cardOrder, 
         cards: cards.cards.map(item => (item.id === card.id ? {id: card.id, content: card.content}: item))
     }
-    console.log(JSON.stringify(newCardArr))
     var content = Base64.encode(JSON.stringify(newCardArr))
-    console.log(content)
+
     return(dispatch) => {
         dispatch({
             type: "SET_WORKING",
@@ -72,8 +74,12 @@ export const updateCard = (card, cards, repo, octokit) => {
             branch: repo.currentBranch.name,
             message: "...",
             sha: repo.currentFile.sha,
-            content: content
+            content: content,
+            headers: {
+                'If-None-Match': ''
+              }
         }).then((result) => {
+            console.log(result)
             dispatch({
                 type: "UPDATE_CARD",
                 cards: newCardArr.cards,
@@ -121,7 +127,10 @@ export const deleteCard = (card, cards, cardOrder,  repo, octokit) => {
         branch: repo.currentBranch.name,
         message: "...",
         sha: repo.currentFile.sha,
-        content: content 
+        content: content,
+        headers: {
+            'If-None-Match': ''
+          }
         }).then((result) => {
             console.log(result)
             dispatch({
@@ -177,6 +186,9 @@ export const loadCards = (repo,result) => {
                 type:"LOAD_CARD",
                 cards,
                 cardOrder   
+            }) 
+            dispatch({
+                type:"RESET_REPO_ON_FILE_OPEN"   
             }) 
         }catch(err) {
             dispatch({
