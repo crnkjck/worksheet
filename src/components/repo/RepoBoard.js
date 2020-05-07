@@ -10,6 +10,8 @@ import Backend from 'react-dnd-html5-backend'
 import {updateRepo, findUserRepos, resetRepoData, setCurrentRepo, setCurrentRepoData, loadFile, loadFromUrl} from "../../store/actions/repoActions"
 import {pathToRegexp} from "path-to-regexp"
 
+//import Editor from "../../../build/elm/Editor.js"
+//import Editor from "editor/Editor.js"
 //import Elm from 'react-elm-components'
 
 import {

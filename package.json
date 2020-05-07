@@ -5,6 +5,8 @@
   "dependencies": {
     "@octokit/rest": "^17.1.4",
     "axios": "^0.19.2",
+    "editor": "file:./build/elm/Editor",
+    "elm-webpack-loader": "^6.0.1",
     "firebase": "^7.13.1",
     "immutability-helper": "^3.0.1",
     "js-base64": "^2.5.2",

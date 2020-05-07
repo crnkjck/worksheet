@@ -24,11 +24,13 @@ export const setCurrentRepo = (repo, octokit) => {
             owner: repo.owner.login,
             repo: repo.name,        
         }).then((result) => {
+            /*
             console.log(result)
             result.data.map((item) => {
                 tempData = [...tempData,item]
             })
             console.log(tempData)
+            */
             dispatch({
                 type: "SET_CURRENT_REPO",
                 currentRepo: repo,
@@ -56,10 +58,11 @@ export const setCurrentRepoData = (currentRepo, branch, path, octokit) => {
             path: path
         }).then((result) => {
             //console.log(result)
+            /*
             result.data.map( (item) => {
                 tempData = [...tempData,item]
             })  
-
+*/
             dispatch({
                 type: "SET_CURRENT_REPO_DATA",
                 currentBranch: branch,
