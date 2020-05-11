@@ -12,7 +12,10 @@ import {pathToRegexp} from "path-to-regexp"
 
 //import Editor from "../../../build/elm/Editor.js"
 //import Editor from "editor/Editor.js"
-//import Elm from 'react-elm-components'
+import Elm from 'react-elm-components'
+//import Editor from "../../elm/src/Editor.elm";
+
+import Editor from "@fmfi-uk-1-ain-412/tableau-editor-embeddable"
 
 import {
     BrowserRouter as Router,
@@ -183,7 +186,7 @@ class RepoBoard extends Component{
         var {user, repo} = this.props
         var {params} = this.props.match
         var pathArr = repo.path.split("/")
-
+        //console.log(Elm,Time)
         if(user.accessToken === ""){
             return(
                 <Container>
@@ -206,7 +209,10 @@ class RepoBoard extends Component{
         return(   
             <Container>
                 <Row>
-                    <Col sm = {1}/>  
+                    <Col sm = {1}>
+                        
+                        
+                    </Col>  
         
                     <Col className = "repoNav" xs = {"auto"}>   
                         {
@@ -292,7 +298,12 @@ class RepoBoard extends Component{
 
                 <Row>
                     <Col sm = {1}/>  
-                     
+                    {/*
+                    <div className="tableauEditor-container">
+                        
+                        <Elm src={Editor.Elm.Editor} flags={null}></Elm>
+                    </div>
+                    */}
                     <Col sm={10}>
                         <DndProvider backend={Backend}>
                             <CardList/> 

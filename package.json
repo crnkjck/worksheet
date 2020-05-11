@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fmfi-uk-1-ain-412/tableau-editor-embeddable": "^0.1.0",
     "@octokit/rest": "^17.1.4",
     "axios": "^0.19.2",
     "editor": "file:./build/elm/Editor",
+    "elm": "^0.19.1-3",
     "elm-webpack-loader": "^6.0.1",
     "firebase": "^7.13.1",
     "immutability-helper": "^3.0.1",
@@ -31,9 +33,9 @@
     "sortablejs": "^1.10.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -50,5 +52,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^5.1.1",
+    "react-app-rewired": "^2.1.6"
   }
 }

@@ -4,7 +4,7 @@ import { Base64 } from 'js-base64';
 export const createCard = (cards, cardOrder, insertIndex, repo, octokit) => {
     var tempOrder = cardOrder
     var newId = Date.now().toString() + (Math.random()*9999).toString()
-    var newCard = {id: newId, content:""}
+    var newCard = {id: newId, solver:"", solverContent:"", content:""}
     tempOrder.splice(insertIndex,0, newId)
     console.log(tempOrder)
     var newCardArr = {type:"magic",cards: [...cards.cards, newCard], cardOrder: tempOrder }
@@ -58,7 +58,7 @@ export const updateCard = (card, cards, repo, octokit) => {
     var newCardArr = {
         type:"magic",
         cardOrder: cards.cardOrder, 
-        cards: cards.cards.map(item => (item.id === card.id ? {id: card.id, content: card.content}: item))
+        cards: cards.cards.map(item => (item.id === card.id ? {id: card.id, solver: card.solver, solverContent: card.solverContent, content: card.content}: item))
     }
     var content = Base64.encode(JSON.stringify(newCardArr))
 

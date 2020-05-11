@@ -1,22 +1,30 @@
 import React, { useState, useRef, useEffect } from 'react'
 import {connect} from "react-redux";
 import ReactMarkdown from "react-markdown"
-import {Card,Form,Button, ButtonGroup} from "react-bootstrap";
+import {Card,Form,Button, ButtonGroup, DropdownButton, Dropdown, Container} from "react-bootstrap";
 import {updateCard,createCard,deleteCard, updateOrder, loadCards} from "../../store/actions/cardActions"
 import {useDrag, useDrop } from "react-dnd"
 import { ItemTypes } from '../../constants/ItemTypes';
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 
+import Solver from "../solvers/solver.js"
+
 import { Base64 } from 'js-base64';
+
+
+import Editor from "../solvers/tableauEditor/src/Editor.elm"
+import Elm from 'react-elm-components'
+
+
 
 const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCard, updateOrder, index, moveCard, taskName, loadCards, updateCard}) => {
 
     const ref = useRef(null)
-    const [stateCard, setStateCard] = useState(card) 
+    const [cardState, setCardState] = useState(card) 
     const [edit, setEdit] = useState({edit:false})
 
-    useEffect(() => {setStateCard(card)},[card])
+    useEffect(() => {setCardState(card)},[card])
 
     const [, drop] = useDrop({
         accept: ItemTypes.CARD,
@@ -62,26 +70,25 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
 
 
     const handleBeginEdit = () => {
-         setEdit({edit:true})
-         
+         setEdit({edit:true})    
     }
     
 
     const handleChange = (e) => {
-        setStateCard({...stateCard,
+        setCardState({...cardState,
             content: e})
     }
 
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
-        updateCard(stateCard, cards, repo, octokit)
+        updateCard(cardState, cards, repo, octokit)
         setEdit({edit:false})
     }
 
 
     function checkIndex(id){
-        return stateCard.id === id
+        return cardState.id === id
     }
 
 
@@ -96,7 +103,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
         e.preventDefault()
  
         if(cardOrder.length > 1){
-            deleteCard(stateCard, cards, cardOrder, repo, octokit)
+            deleteCard(cardState, cards, cardOrder, repo, octokit)
             /*
             var array = [...cardOrder]; // make a separate copy of the array
             var index = array.indexOf(stateCard.id)
@@ -106,6 +113,20 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
                 updateOrder(array,taskName)
             }*/
         }
+    }
+
+    const handleSolverToogle = (e) => {
+        setCardState({
+            ...cardState,
+            solver: e
+        })
+    }
+
+    const handleSolverContent = (e) => {
+        setCardState({
+            ...cardState,
+            solverContent: e
+        })
     }
     
 
@@ -121,27 +142,61 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
     return(
         <div className="cardCell" id={index}>                          
             <Card border="white" bg="white" text="black" ref={ref}>
-                <div className="toolbar">
-                    <ButtonGroup aria-label="Controls">
-                        <Button  className="text-right"  variant="light" onClick={handleDelete} disabled={cards.working}>X</Button>
-                    </ButtonGroup>
-                </div>
+                {
+                    edit.edit ? 
+                        <div className="toolbar">
+                            <DropdownButton id = "controls" title = "" disabled={cards.working} variant="secondary">
+                            {
+                                cardState.solver === "tableauEditor" ? 
+                                    <Dropdown.Item as = "button"  onClick = {()=>handleSolverToogle("")} active>
+                                        Disable TableauEditor
+                                    </Dropdown.Item>
+                                :
+                                    <Dropdown.Item as = "button" onClick = {()=>handleSolverToogle("tableauEditor")} >
+                                        Use TableauEditor
+                                    </Dropdown.Item>     
+                            }    
+                            <Dropdown.Divider />
+                                <Dropdown.Item as = "button" onClick={handleDelete}>
+                                    Delete Card
+                                </Dropdown.Item>               
+                            </DropdownButton>
+                        </div>
+                    :
+                        null
+                }
                 
                 <Card.Body  onDoubleClick={handleBeginEdit}>
                     {
                         edit.edit ? 
                             <Form onSubmit={handleEditSubmit} className="cardEditor">
-                                <Form.Group controlId="exampleForm.ControlTextarea1">
-                                    <SimpleMDE onChange={handleChange} value = {stateCard.content} options={{toolbar:  ["preview","|","bold", "italic", "strikethrough", "|", "heading", "heading-smaller","code", "quote", "|","side-by-side","fullscreen"]}}/>
-                                </Form.Group>
+                                 {
+                                    cardState.solver ? 
+                                        <Solver type = {cardState.solver} content = {cardState.solverContent}/>
+                                    : 
+                                        <div>
+                                            <Form.Group controlId="exampleForm.ControlTextarea1">
+                                                <SimpleMDE onChange={handleChange} value = {cardState.content} options={{toolbar:  ["preview","|","bold", "italic", "strikethrough", "|", "heading", "heading-smaller","code", "quote", "|","side-by-side","fullscreen"]}}/>
+                                            </Form.Group>
+                                            <ReactMarkdown source={cardState.content}/>
+                                        </div>
+                                }
                                 <Button className="float-right" variant="secondary" type="submit" disabled={cards.working}>Save</Button>
-                                <ReactMarkdown source={stateCard.content}/>
                             </Form>
                             
                         :
-                            <ReactMarkdown source={stateCard.content}/>
+                            <Container>
+                                {
+                                    cardState.solver ? 
+                                        <div> {cardState.solver} </div>
+                                    :
+                                        <ReactMarkdown source={cardState.content}/>
+                                }
+                            </Container>
+                            
                     }
                 </Card.Body>
+                
             </Card>
             
             <div className="addCard">
