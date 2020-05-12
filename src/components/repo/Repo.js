@@ -54,12 +54,12 @@ const Repo = (props) => {
             readme = e
         }
         return(
-            <ListGroup.Item key={e.sha} onClick={null/*()=>renderItemInfo(e)*/}>
+            <ListGroup.Item key={e.sha}>
                 {
                     e.type === "dir" ?
                         <Link to={generateFolderLink(e)}>{e.name}/</Link>
                     :
-                        <Link to={generateFileLink(e)/*`/${match.params.repo}/${match.params.branch}/${match.params.path ? match.params.path+"/":""}${e.name}`*/}>{e.name}</Link>
+                        <Link to={generateFileLink(e)}>{e.name}</Link>
                 }
                 
             </ListGroup.Item>

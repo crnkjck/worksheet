@@ -181,12 +181,11 @@ class RepoBoard extends Component{
 
     
     render(){
-        console.log()
       
         var {user, repo} = this.props
         var {params} = this.props.match
         var pathArr = repo.path.split("/")
-        //console.log(Elm,Time)
+
         if(user.accessToken === ""){
             return(
                 <Container>
@@ -195,10 +194,6 @@ class RepoBoard extends Component{
                             <span className="sr-only">Log In to see Repositories</span>
                         </div>
                         <div>Log In to see Repositories</div>
-                        {/*
-                        <button onClick = {this.getFile}>Get Data</button>
-                        <button onClick = {this.uploadFile}>Upload File</button>
-                        */}
                     </div>
                     <Row>    
                     </Row>
@@ -288,22 +283,10 @@ class RepoBoard extends Component{
                         } 
                     </Col>
                 </Row>
-                <Row>
-                    <Col sm = {1}/>  
-                        
-                    <Col sm={10}>
-                    
-                    </Col>
-                </Row>
+
 
                 <Row>
                     <Col sm = {1}/>  
-                    {/*
-                    <div className="tableauEditor-container">
-                        
-                        <Elm src={Editor.Elm.Editor} flags={null}></Elm>
-                    </div>
-                    */}
                     <Col sm={10}>
                         <DndProvider backend={Backend}>
                             <CardList/> 

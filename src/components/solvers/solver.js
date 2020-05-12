@@ -14,13 +14,24 @@ import Elm from 'react-elm-components'
 
 
 
-const Solver = ({type, content}) => {
+const Solver = ({type, content, handleChange}) => {
+
+    const setupPorts = (ports) => {
+        ports.print.subscribe(function () {
+            //window.print();
+          });
+        ports.cache.subscribe(function (tableauData) {
+        handleChange(tableauData)
+        // sem pride posielanie dat to reduxu, ale zatial netreba
+        // v stand-alone editore sa tu ukladaju tableauData do localStorage
+        });
+    }
 
     const renderSolver = () => {
         if(type === "tableauEditor"){
             return (
                 <div className="tableauEditor-container">
-                    <Elm src={Editor.Elm.Editor} flags={content ? content : null}></Elm>
+                    <Elm src={Editor.Elm.Editor} flags={content ? content : null} ports = {setupPorts}></Elm>
                 </div> 
             )
         }else{
@@ -35,4 +46,6 @@ const Solver = ({type, content}) => {
     )}
    
 
+
+    
 export default Solver

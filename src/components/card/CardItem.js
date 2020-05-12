@@ -8,15 +8,9 @@ import { ItemTypes } from '../../constants/ItemTypes';
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 
-import Solver from "../solvers/solver.js"
+import Solver from "../solvers/Solver.js"
 
 import { Base64 } from 'js-base64';
-
-
-import Editor from "../solvers/tableauEditor/src/Editor.elm"
-import Elm from 'react-elm-components'
-
-
 
 const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCard, updateOrder, index, moveCard, taskName, loadCards, updateCard}) => {
 
@@ -130,15 +124,6 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
     }
     
 
-    const testing = () =>{
-        var temp = {cardOrder:["1","2"], cards:[{id:"1",content:"bla"},{id:"2",content:"hallo"}]}
-        var json = JSON.stringify(temp)
-        console.log(json)
-        //var x = Base64.encode(json)
-        loadCards(json)
-    }
-
-
     return(
         <div className="cardCell" id={index}>                          
             <Card border="white" bg="white" text="black" ref={ref}>
@@ -172,7 +157,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
                             <Form onSubmit={handleEditSubmit} className="cardEditor">
                                  {
                                     cardState.solver ? 
-                                        <Solver type = {cardState.solver} content = {cardState.solverContent}/>
+                                        <Solver type = {cardState.solver} content = {cardState.solverContent} handleChange={handleSolverContent}/>
                                     : 
                                         <div>
                                             <Form.Group controlId="exampleForm.ControlTextarea1">

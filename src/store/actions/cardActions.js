@@ -6,10 +6,9 @@ export const createCard = (cards, cardOrder, insertIndex, repo, octokit) => {
     var newId = Date.now().toString() + (Math.random()*9999).toString()
     var newCard = {id: newId, solver:"", solverContent:"", content:""}
     tempOrder.splice(insertIndex,0, newId)
-    console.log(tempOrder)
+
     var newCardArr = {type:"magic",cards: [...cards.cards, newCard], cardOrder: tempOrder }
-    console.log(newCardArr)
-    console.log(repo)
+
     var content = Base64.encode(JSON.stringify(newCardArr))
 
     return  (dispatch) => {
@@ -157,7 +156,7 @@ export const deleteCard = (card, cards, cardOrder,  repo, octokit) => {
 
 
 export const updateOrder = (cardOrder) => {
-    console.log("updateOrder:", cardOrder);
+
     return  (dispatch) => {
         
         try{
@@ -176,7 +175,7 @@ export const updateOrder = (cardOrder) => {
 
 
 export const loadCards = (repo,result) => {
-    console.log(result)
+
     var parsedItem = JSON.parse(result.data)
     var cards = parsedItem.cards
     var cardOrder = parsedItem.cardOrder
