@@ -47,21 +47,24 @@ const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state,loc
                 <Button onClick={() => console.log(JSON.parse(localStorage.getItem("user")))}>localStorage</Button>
                 <Button onClick={() => console.log(Date.now())}>Test</Button>*/
                
-                <Button onClick={() => console.log(state)}>State</Button>
+                //<Button onClick={() => console.log(state)}>State</Button>
             }
             
 
             <Nav className="xs-2">
                 {
                 user ? 
+                <Button variant="outline-light" onClick={()=> githubSignout()}>Log Out</Button>
+                /*
                     <NavDropdown title={user.additionalUserInfo.username} id="nav-dropdown">
                         <NavDropdown.Item eventKey="4.1" onClick={()=> githubSignout()}>Log Out</NavDropdown.Item>
-                    </NavDropdown> 
+                    </NavDropdown> */
                 : 
-                    
-                    <NavDropdown title="Anonymous" id="nav-dropdown">
+                <Button variant="outline-light" onClick={()=> githubSignin()}>Log in</Button>
+                    /*
+                    <NavDropdown title="Guest" id="nav-dropdown">
                         <NavDropdown.Item eventKey="4.1" onClick={()=> githubSignin()}>Log In</NavDropdown.Item>
-                    </NavDropdown>
+                    </NavDropdown>*/
 
                 }            
              </Nav>        

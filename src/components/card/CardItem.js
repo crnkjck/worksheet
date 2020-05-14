@@ -154,7 +154,8 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
                 <Card.Body  onDoubleClick={handleBeginEdit}>
                     {
                         edit.edit ? 
-                            <Form onSubmit={handleEditSubmit} className="cardEditor">
+                            //<Form /*onSubmit={handleEditSubmit}*/ className="cardEditor">
+                                <Container className="cardEditor">
                                  {
                                     cardState.solver ? 
                                         <Solver type = {cardState.solver} content = {cardState.solverContent} handleChange={handleSolverContent}/>
@@ -166,8 +167,9 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
                                             <ReactMarkdown source={cardState.content}/>
                                         </div>
                                 }
-                                <Button className="float-right" variant="secondary" type="submit" disabled={cards.working}>Save</Button>
-                            </Form>
+                                <Button className="float-right" variant="secondary" type="submit" disabled={cards.working} onClick={handleEditSubmit}>Save</Button>
+                            
+                            </Container>
                             
                         :
                             <Container>

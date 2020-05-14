@@ -189,20 +189,19 @@ class RepoBoard extends Component{
         if(user.accessToken === ""){
             return(
                 <Container>
-                    <div className="text-center">
-                        <div className="spinner-border" role="status">
-                            <span className="sr-only">Log In to see Repositories</span>
-                        </div>
-                        <div>Log In to see Repositories</div>
-                    </div>
-                    <Row>    
+                    <Row className="justify-content-md-center">
+                    <Col xs={"auto"}>
+                        Log In to see Repositories  
+                    </Col>
+                        
+                      
                     </Row>
                 </Container>
             )
         }else{
             //console.log("RepoBoard ", repo)
         return(   
-            <Container>
+            <Container fluid>
                 <Row>
                     <Col sm = {1}>
                         
@@ -284,16 +283,15 @@ class RepoBoard extends Component{
                     </Col>
                 </Row>
 
-
-                <Row>
-                    <Col sm = {1}/>  
-                    <Col sm={10}>
-                        <DndProvider backend={Backend}>
-                            <CardList/> 
-                        </DndProvider>
-                    </Col>
-                </Row>
-     
+                
+                    <Row>
+                        <Col>
+                            <DndProvider backend={Backend}>
+                                <CardList/> 
+                            </DndProvider>
+                        </Col>
+                    </Row>
+                
             </Container>
         )      
     }
