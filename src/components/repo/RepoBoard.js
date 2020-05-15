@@ -17,6 +17,7 @@ import Elm from 'react-elm-components'
 
 import Editor from "@fmfi-uk-1-ain-412/tableau-editor-embeddable"
 
+
 import {
     BrowserRouter as Router,
     Switch,
@@ -204,7 +205,7 @@ class RepoBoard extends Component{
             <Container fluid>
                 <Row>
                     <Col sm = {1}>
-                        
+                  
                         
                     </Col>  
         

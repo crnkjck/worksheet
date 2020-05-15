@@ -27,7 +27,7 @@ const Solver = ({type, content, handleChange}) => {
     const renderSolver = () => {
         if(type === "tableauEditor"){
             return (
-                <Container className="tableauEditor-container">
+                <Container className="tableauEditor-container" fluid>
                     <Elm src={Editor.Elm.Editor} flags={content ? content : null} ports = {setupPorts}></Elm>
                 </Container> 
             )

@@ -155,7 +155,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
                     {
                         edit.edit ? 
                             //<Form /*onSubmit={handleEditSubmit}*/ className="cardEditor">
-                                <Container className="cardEditor">
+                                <Container className="cardEditor" fluid style={{'overflowY': 'auto','overflowX': 'auto'}}>
                                  {
                                     cardState.solver ? 
                                         <Solver type = {cardState.solver} content = {cardState.solverContent} handleChange={handleSolverContent}/>
@@ -168,7 +168,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
                                         </div>
                                 }
                                 <Button className="float-right" variant="secondary" type="submit" disabled={cards.working} onClick={handleEditSubmit}>Save</Button>
-                            
+
                             </Container>
                             
                         :
