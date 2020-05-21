@@ -21,15 +21,13 @@ const cardReducer = (state = initState, action) => {
                 cards: action.cards,
                 cardOrder: action.cardOrder
             };
-        case "CREATE_CARD" : 
-            
+        case "CREATE_CARD" :            
             return {
                 ...state,
                 cards: action.cards,
                 cardOrder: action.cardOrder
             };
         case "UPDATE_CARD" : 
-            console.log(action)
             return {
                 ...state,
                 cards: action.cards,
@@ -42,7 +40,6 @@ const cardReducer = (state = initState, action) => {
                 cardOrder: action.cardOrder   
             }    
         case "CREATE_CARD_ERROR":
-            console.log("Error", action.err)
             return state;
 
         case "UPDATE_ORDER":

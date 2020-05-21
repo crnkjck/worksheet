@@ -1,10 +1,10 @@
 import { Base64 } from 'js-base64';
 
 
-export const createCard = (cards, cardOrder, insertIndex, repo, octokit) => {
+export const createCard = (cards, cardOrder, insertIndex, type, repo, octokit) => {
     var tempOrder = cardOrder
     var newId = Date.now().toString() + (Math.random()*9999).toString()
-    var newCard = {id: newId, solver:"", solverContent:"", content:""}
+    var newCard = {id: newId, solver: type, solverContent:"", content:""}
     tempOrder.splice(insertIndex,0, newId)
 
     var newCardArr = {type:"magic",cards: [...cards.cards, newCard], cardOrder: tempOrder }
@@ -197,6 +197,19 @@ export const loadCards = (repo,result) => {
         }
 
     }
+}
+
+
+export const closeCards = () => {
+    return (dispatch) => {
+        try{
+            dispatch({
+                type: "CLOSE_CARDS"
+            })
+        }catch(err){
+           console.log(err)
+        }
+    } 
 }
 
 

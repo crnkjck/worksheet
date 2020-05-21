@@ -68,10 +68,10 @@ code {
 .addCard{
   position: absolute;
   text-align: center;
-  bottom: -15px;
+  bottom: -10px;
   height: 20px;
   width: 200px;
-  left:40%;
+  left:42%;
   z-index: 1;
 }
 

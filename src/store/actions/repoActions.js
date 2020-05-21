@@ -111,7 +111,7 @@ export const updateRepo = (item) => {
 }
 
 
-export const loadFile = (repo, file, path, format, octokit) => {
+export const loadFile = (repo, file, path, format, octokit,back) => {
     return  (dispatch) => {
         dispatch({
             type: "SET_WORKING",
@@ -159,6 +159,7 @@ export const loadFile = (repo, file, path, format, octokit) => {
             })
             
         }).catch((err) => {
+            back()
            console.log(err)
         })
     }
@@ -213,6 +214,7 @@ export const resetRepoData = () => {
             dispatch({
                 type: "RESET_REPO_DATA"
             })
+            
         }catch(err){
            console.log(err)
         }

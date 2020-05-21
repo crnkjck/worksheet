@@ -1,29 +1,12 @@
 import React, {Component} from "react";
-import {Container, Row, Col, Form, Button, DropdownButton, Dropdown, Breadcrumb, ListGroup} from "react-bootstrap";
+import {Container, Row, Col, DropdownButton, Dropdown, Breadcrumb} from "react-bootstrap";
 import Repo from "./Repo"
 import CardList from "../card/CardList"
 import {connect} from "react-redux";
-
 import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
-
 import {updateRepo, findUserRepos, resetRepoData, setCurrentRepo, setCurrentRepoData, loadFile, loadFromUrl} from "../../store/actions/repoActions"
-import {pathToRegexp} from "path-to-regexp"
-
-//import Editor from "../../../build/elm/Editor.js"
-//import Editor from "editor/Editor.js"
-import Elm from 'react-elm-components'
-//import Editor from "../../elm/src/Editor.elm";
-
-import Editor from "@fmfi-uk-1-ain-412/tableau-editor-embeddable"
-
-
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link
-  } from "react-router-dom";
+import {closeCards} from "../../store/actions/cardActions"
 
 
 class RepoBoard extends Component{
@@ -40,8 +23,6 @@ class RepoBoard extends Component{
     componentDidUpdate(prevProps) {
         var {match} = this.props
         var {repo} = this.props
-        //console.log(match,prevProps)
-        //console.log(this.props, prevProps)
         
         if((this.props.user !== prevProps.user)){
 // Load user repos after login           
@@ -54,36 +35,37 @@ class RepoBoard extends Component{
      
 // On url change load new folder/file        
         if((match.url !== prevProps.match.url)){    
-            this.setDataFromURL(prevProps) 
+            if(match.url === "/" && prevProps.match.url !== "/"){
+                this.props.resetRepoData()
+                this.props.closeCards()            
+            }
+            this.setDataFromURL() 
         }else{
 // Load repo, branch and folder from URL
             if((match.params.repo && repo.currentRepo === "") || (match.params.branch && repo.currentBranch === "") || (match.params.path && repo.path === "")){    
-                this.setDataFromURL(prevProps) 
+                this.setDataFromURL() 
 // When loading file (not only folder) from url, to load the file, not only folder            
             }else if(match.params.path !== repo.path){      
-                this.setDataFromURL(prevProps) 
+                this.setDataFromURL() 
             }
         }
     } 
 
 /**
  * Handle setting current folder or file from URL
- * @param {*} prevProps 
+ * 
  */    
-    setDataFromURL(prevProps){
+    setDataFromURL(){
         var {params} = this.props.match
         var {repo} = this.props
-        //console.log(params, repo)
 // Set repo from URL
         if((params.repo !== repo.currentRepo.name) || (params.repo && repo.currentRepo ==="")){
-            //console.log("repo stuff")
             var repoItem = repo.repoList.find(e => e.name === params.repo)
             if(repoItem){
                 this.props.setCurrentRepo(repoItem, this.props.octokit)
             }
 // Set branch from URL            
         }else if(params.branch !== repo.currentBranch.name){
-            //console.log("branch stuff")
             if(params.branch !== undefined){
                 var branchItem = repo.branchList.find(e => e.name === params.branch)
                 if(branchItem){
@@ -93,12 +75,10 @@ class RepoBoard extends Component{
         }
 // Set folder/file from URL
         else if(params.path !== repo.path){
-            //console.log("file stuff")
             if(params.path !== undefined){  
 // Find file with same path as URL path in current repo
                 var dataItem = repo.currentRepoData.find(e => e.path === params.path)
-             
-                //console.log(dataItem)
+        
                 if(dataItem !== undefined){
 // In case of file load it to currentFile
                     if(dataItem.type === "file" ){
@@ -108,20 +88,21 @@ class RepoBoard extends Component{
                                 return
                             }
                         }
-                       
+                        
                         if(dataItem.name.includes(".json")){
-                            this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "raw", this.props.octokit)
+                            
+                            this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "raw", this.props.octokit,this.props.history.goBack)
                         }else{
-                            this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "html", this.props.octokit)
+                            console.log(this.props.history)
+                            this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "html", this.props.octokit,this.props.history.goBack)
                         }
 // If folder load it to currentRepoData                     
                     }else{
                         this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, params.path, this.props.octokit)  
                     }
                      
-                
-                //this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, params.path, this.props.octokit)   
-                }else if(dataItem === undefined && params.path !== "" && !repo.currentFile){
+                }else if(dataItem === undefined && params.url !== "" && !repo.currentFile){
+                    
                     this.props.loadFromUrl(this.props.repo, this.props.repo.currentBranch, params.path, this.props.octokit)
                 }       
             }
@@ -175,9 +156,7 @@ class RepoBoard extends Component{
         link = link + newPath
         return(
             link
-        )
-
-        //this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, newPath, this.props.octokit)   
+        ) 
     }
 
     
@@ -185,28 +164,22 @@ class RepoBoard extends Component{
       
         var {user, repo} = this.props
         var {params} = this.props.match
-        var pathArr = repo.path.split("/")
 
         if(user.accessToken === ""){
             return(
                 <Container>
                     <Row className="justify-content-md-center">
-                    <Col xs={"auto"}>
-                        Log In to see Repositories  
-                    </Col>
-                        
-                      
+                        <Col xs={"auto"}>
+                            Log In to see Repositories  
+                        </Col>   
                     </Row>
                 </Container>
             )
         }else{
-            //console.log("RepoBoard ", repo)
         return(   
             <Container fluid>
                 <Row>
                     <Col sm = {1}>
-                  
-                        
                     </Col>  
         
                     <Col className = "repoNav" xs = {"auto"}>   
@@ -216,7 +189,7 @@ class RepoBoard extends Component{
                                     {
                                         repo.repoList && repo.repoList.map((item,i) => {
                                             return( 
-                                                <Dropdown.Item key = {item.id} href={`/${item.name}`} onClick={()=> console.log(item.name,"clicked")/*() => this.props.setCurrentRepo(item,this.props.octokit)*/}>
+                                                <Dropdown.Item key = {item.id} href={`/${item.name}`}>
                                                     {item.name}
                                                 </Dropdown.Item>
                                             )
@@ -234,7 +207,7 @@ class RepoBoard extends Component{
                                     {
                                         repo.branchList && repo.branchList.map((item,i) => {
                                             return( 
-                                                <Dropdown.Item key = {item.name} href={`/${params.repo}/${item.name}`} onClick={() => console.log(item.name,"branch clicked")/*this.setCurrentBranch(item)*/} >
+                                                <Dropdown.Item key = {item.name} href={`/${params.repo}/${item.name}`}>
                                                    {item.name}
                                                 </Dropdown.Item>
                                             )
@@ -268,23 +241,17 @@ class RepoBoard extends Component{
                 </Row>
 
                 <Row>
-                    <Col sm = {1}/>  
-                        
+                    <Col sm = {1}/>            
                     <Col sm = {10}>   
                         {
-                            repo.currentBranch ?
-                            
-                            <Repo  addToPath={this.addToPath} pathToString = {this.pathToString} url = {this.props.match.url}/>
-/*
-                            <Route path={`${this.props.match.path}/:path`} component={(props) => <Repo {...props} addToPath={this.addToPath}/>}/>
-                            */
+                            repo.currentBranch ?                   
+                                <Repo  addToPath={this.addToPath} pathToString = {this.pathToString} url = {this.props.match.url}/>
                             :
-                            null
+                                null
                         } 
                     </Col>
                 </Row>
-
-                
+  
                     <Row>
                         <Col>
                             <DndProvider backend={Backend}>
@@ -315,8 +282,9 @@ const mapDispatchToProps = (dispatch) => {
         resetRepoData: () => dispatch(resetRepoData()),
         setCurrentRepo: (repo, octokit) => dispatch(setCurrentRepo(repo, octokit)),
         setCurrentRepoData: (currentRepo, branch, path, octokit) => (dispatch(setCurrentRepoData(currentRepo, branch, path, octokit))),
-        loadFile: (repo, file, path, format, octokit) => dispatch(loadFile(repo, file, path, format, octokit)),
-        loadFromUrl: (repo, file, path, format, octokit) => dispatch(loadFromUrl(repo, file, path, format, octokit))
+        loadFile: (repo, file, path, format, octokit,back) => dispatch(loadFile(repo, file, path, format, octokit,back)),
+        loadFromUrl: (repo, file, path, format, octokit) => dispatch(loadFromUrl(repo, file, path, format, octokit)),
+        closeCards: () => dispatch(closeCards())
     }
 }
 

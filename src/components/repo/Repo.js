@@ -1,50 +1,24 @@
-import React, { useState, useEffect }  from 'react'
+import React from 'react'
 import {connect} from "react-redux";
 import {Card, ListGroup} from "react-bootstrap";
-import { Base64 } from 'js-base64';
 import {loadCards} from "../../store/actions/cardActions"
 import {loadFile} from "../../store/actions/repoActions"
 
 import {
     BrowserRouter as Router,
-    Switch,
-    Route,
     Link,
-    useRouteMatch,
-    useParams
+    useRouteMatch
   } from "react-router-dom";
 
 
 const Repo = (props) => {
  
-    const {repo, octokit, addToPath, loadCards, loadFile, url, pathToString} = props
-    //console.log(match)
+    const {repo, pathToString} = props
     var readme = null
-    const getRepoReadme = async () =>{
-        loadFile(repo, readme, "README.md", "html", octokit)
-    }
+
     var match = useRouteMatch()
 
 
-    useEffect(() => {
-        //console.log("repo effect works too", match)
-        if(match.params.path !== undefined){
-            var file = repo.currentRepoData.find(e => e.path === match.params.path)
-        
-            try{
-                //renderItemInfo(file)
-                //loadFile(repo, file, match.params.path, "raw", octokit)
-                if(repo.currentFile === null){
-                    //getRepoReadme()
-                } 
-            }catch(e){
-                console.log(e)
-            }
-        }
-        
-    }, [url])
-
-    
 /**
  * Returns each item from repo as Link to render
  * @param {*} e 
@@ -92,7 +66,6 @@ const Repo = (props) => {
                     link = link + "/" + pathAsString + `/${e.name}`
                 }
             }
-   
         }
         return(            
             link
@@ -125,26 +98,10 @@ const Repo = (props) => {
                 link = link + "/" + pathAsString + `/${e.name}`
             }       
         }
-        //console.log(link)
         return(            
             link
         )
     }
-   
-/*
-    const renderItemInfo = async (e) => {
-        if(e.type === "dir"){
-            addToPath(e.path)
-        }else{
-            if(e.name.includes(".json")){
-                loadFile(repo, e, e.path, "raw", octokit)
-            }else{
-                loadFile(repo, e, e.path, "html", octokit)
-            }           
-        }
-    }
-*/
-
    
     
     return(

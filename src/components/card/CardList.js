@@ -1,4 +1,4 @@
-import React , { useState, useCallback, useEffect } from "react";
+import React, {useCallback } from "react";
 import {connect} from "react-redux";
 import {ListGroup} from "react-bootstrap";
 import CardItem from "./CardItem"
@@ -8,12 +8,6 @@ import update from 'immutability-helper';
 
 
 const CardList = ({cards, cardOrder, updateOrder}) => {
-
-    //console.log(cards,cardOrder)
-
-    //const [order, setOrder] = useState(cardOrder)
-
-    //useEffect(() => {setOrder(cardOrder)},[cardOrder])
 
     var taskCards = []
     cardOrder.map((item) => {
@@ -50,15 +44,9 @@ const CardList = ({cards, cardOrder, updateOrder}) => {
            </ListGroup.Item>  
         )
     }
-
-    /*
-    if((cardOrder[0] === "" || cardOrder.length === 0)){
-        createCard(cardOrder,taskName,0)
-    }
-    */
  
-    return(
-       
+    
+    return(   
         <ListGroup variant="flush">
             {taskCards && taskCards.map( (item,i) => {
                 return( 
@@ -74,7 +62,6 @@ const mapDispatchToProps = (dispatch) => {
     return {
         updateOrder: (cardOrder, taskName) => dispatch(updateOrder(cardOrder,taskName)),
         createCard: (cardOrder,taskName,insertIndex) => dispatch(createCard(cardOrder,taskName,insertIndex)), 
-
     }
 }
 
@@ -84,8 +71,7 @@ const mapStateToProps = (state) => {
         user: state.auth.user,
         accessToken: state.auth.accessToken,
         cards: state.card.cards,
-        cardOrder: state.card.cardOrder
-    
+        cardOrder: state.card.cardOrder   
     }
 }
 

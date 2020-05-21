@@ -1,74 +1,33 @@
-import React, { useState } from 'react';
-import {Navbar, Button,Nav,NavDropdown} from "react-bootstrap";
+import React from 'react';
+import {Navbar, Button,Nav} from "react-bootstrap";
 import { LinkContainer } from 'react-router-bootstrap'
 import { githubSignin,githubSignout, localStorageSignin } from "../../store/actions/authActions";
 import {connect} from "react-redux";
 
-const Navigation = ({githubSignin,githubSignout, user,cardOrder,cards, state,localStorageSignin }) => {
-    
-    //console.log("NAVIGATION LOADED")
-    /*
-    const [x,xs] = useState({
-        zvierata:[
-                {nazov: "ovca",
-                pocet: 0},
-                {nazov: "sliepka",
-                pocet: 0}]
-    })
 
-    const [x,xs] = useState({
-        ovca:0,
-        sliepka:0
-    })
-    
-    const pridajZviera = (zviera) => {
-        xs({zvierata: x.zvierata.map(item => (item.nazov === zviera ? {nazov: zviera, pocet: item.pocet + 1}: item)) })    
-    }
-    */
-    return(
+const Navigation = ({githubSignin,githubSignout, user}) => {
+   
+    return(  
        <Navbar bg="dark" variant= "dark" expand="lg">
             <LinkContainer to = '/'>
                 <Navbar.Brand className="text-white">Matematika 4</Navbar.Brand>
             </LinkContainer>
-            <Nav className="mr-auto">
-            
+            <Nav className="mr-auto">   
             </Nav>
-            {/*
-            <Nav className="mr-auto">
-                <LinkContainer to = '/notice'>
-                    <Nav.Link className="text-white">Oznámenia</Nav.Link>
-                </LinkContainer>
-            </Nav>
-            
-                <Button onClick={() => console.log(user)} disabled={cards.working}>User</Button>
-                <Button onClick={() => console.log(cardOrder)}>Order</Button>
-                <Button onClick={() => console.log(cards)}>Cards</Button>
-                <Button onClick={() => console.log(state)}>State</Button>
-                <Button onClick={() => console.log(JSON.parse(localStorage.getItem("user")))}>localStorage</Button>
-                <Button onClick={() => console.log(Date.now())}>Test</Button>*/
-               
+            {
                 //<Button onClick={() => console.log(state)}>State</Button>
             }
-            
-
+                
             <Nav className="xs-2">
                 {
                 user ? 
                 <Button variant="outline-light" onClick={()=> githubSignout()}>Log Out</Button>
-                /*
-                    <NavDropdown title={user.additionalUserInfo.username} id="nav-dropdown">
-                        <NavDropdown.Item eventKey="4.1" onClick={()=> githubSignout()}>Log Out</NavDropdown.Item>
-                    </NavDropdown> */
-                : 
+               : 
                 <Button variant="outline-light" onClick={()=> githubSignin()}>Log in</Button>
-                    /*
-                    <NavDropdown title="Guest" id="nav-dropdown">
-                        <NavDropdown.Item eventKey="4.1" onClick={()=> githubSignin()}>Log In</NavDropdown.Item>
-                    </NavDropdown>*/
-
                 }            
              </Nav>        
        </Navbar>
+
     )
 }
 

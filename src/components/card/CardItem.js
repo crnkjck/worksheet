@@ -54,6 +54,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
 
     const [{isDragging}, drag] = useDrag({
         item : {type : ItemTypes.CARD,card,index},
+        canDrag: !edit.edit,
         collect: monitor => ({
             isDragging: !!monitor.isDragging()
         }),
@@ -86,26 +87,18 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
     }
 
 
-    const handleCreate = (e) => {
+    const handleCreate = (e,type) => {
+        console.log(octokit)
         e.preventDefault()
         var insertIndex = cardOrder.findIndex(checkIndex) + 1
-        createCard(cards, cardOrder, insertIndex, repo, octokit)
+        createCard(cards, cardOrder, insertIndex, type, repo, octokit)
     }
     
 
     const handleDelete = (e) => {
         e.preventDefault()
- 
         if(cardOrder.length > 1){
             deleteCard(cardState, cards, cardOrder, repo, octokit)
-            /*
-            var array = [...cardOrder]; // make a separate copy of the array
-            var index = array.indexOf(stateCard.id)
-
-            if (index !== -1) {
-                array.splice(index, 1);
-                updateOrder(array,taskName)
-            }*/
         }
     }
 
@@ -131,7 +124,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
                     edit.edit ? 
                         <div className="toolbar">
                             <DropdownButton id = "controls" title = "" disabled={cards.working} variant="secondary">
-                            {
+                            {/*
                                 cardState.solver === "tableauEditor" ? 
                                     <Dropdown.Item as = "button"  onClick = {()=>handleSolverToogle("")} active>
                                         Disable TableauEditor
@@ -139,9 +132,21 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
                                 :
                                     <Dropdown.Item as = "button" onClick = {()=>handleSolverToogle("tableauEditor")} >
                                         Use TableauEditor
-                                    </Dropdown.Item>     
+                                    </Dropdown.Item>   */  
                             }    
-                            <Dropdown.Divider />
+      
+                            {/*
+                                cardState.solver === "resolver" ? 
+                                    <Dropdown.Item as = "button"  onClick = {()=>handleSolverToogle("")} active>
+                                        Disable Resolver
+                                    </Dropdown.Item>
+                                :
+                                    <Dropdown.Item as = "button" onClick = {()=>handleSolverToogle("resolver")} >
+                                        Use Resolver
+                                    </Dropdown.Item>    
+                                    <Dropdown.Divider />*/ 
+                            } 
+          
                                 <Dropdown.Item as = "button" onClick={handleDelete}>
                                     Delete Card
                                 </Dropdown.Item>               
@@ -151,43 +156,47 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
                         null
                 }
                 
-                <Card.Body  onDoubleClick={handleBeginEdit}>
+                
                     {
                         edit.edit ? 
-                            //<Form /*onSubmit={handleEditSubmit}*/ className="cardEditor">
-                                <Container className="cardEditor" fluid style={{'overflowY': 'auto','overflowX': 'auto'}}>
+                            <Card.Body className="cardEditor" style={{'overflowY': 'auto','overflowX': 'auto'}}>       
                                  {
                                     cardState.solver ? 
                                         <Solver type = {cardState.solver} content = {cardState.solverContent} handleChange={handleSolverContent}/>
                                     : 
-                                        <div>
-                                            <Form.Group controlId="exampleForm.ControlTextarea1">
-                                                <SimpleMDE onChange={handleChange} value = {cardState.content} options={{toolbar:  ["preview","|","bold", "italic", "strikethrough", "|", "heading", "heading-smaller","code", "quote", "|","side-by-side","fullscreen"]}}/>
-                                            </Form.Group>
+                                        <Container >
+                                            <SimpleMDE onChange={handleChange} value = {cardState.content} options={{toolbar:  ["preview","|","bold", "italic", "strikethrough", "|", "heading", "heading-smaller","code", "quote", "|","side-by-side","fullscreen"]}}/>                                            
                                             <ReactMarkdown source={cardState.content}/>
-                                        </div>
+                                        </Container>
                                 }
-                                <Button className="float-right" variant="secondary" type="submit" disabled={cards.working} onClick={handleEditSubmit}>Save</Button>
-
-                            </Container>
-                            
+                                <Button className="float-right" variant="secondary" disabled={cards.working} onClick={handleEditSubmit}>Save</Button>                              
+                            </Card.Body>       
                         :
-                            <Container>
+                            <Card.Body onDoubleClick={handleBeginEdit}>
                                 {
                                     cardState.solver ? 
-                                        <div> {cardState.solver} </div>
+                                        <Container style = {{"pointerEvents": "none", "maxHeight":"10em", 'overflowY': 'hidden','overflowX': 'hidden'}}>
+                                            <Solver type = {cardState.solver} content = {cardState.solverContent} handleChange={handleSolverContent}/>    
+                                        </Container>                                       
                                     :
                                         <ReactMarkdown source={cardState.content}/>
-                                }
-                            </Container>
-                            
+                                }                              
+                            </Card.Body>                          
                     }
-                </Card.Body>
                 
-            </Card>
-            
+                
+            </Card>        
             <div className="addCard">
-                <Button className="addCardButton" variant="outline-dark" onClick={handleCreate} disabled={cards.working}>Add</Button>
+                <Dropdown as={ButtonGroup} drop={"up"} disabled={cards.working}>
+                    <Button className="addCardButton" variant="outline-dark" onClick={(e) => handleCreate(e,"")}  disabled={cards.working}>Add</Button>
+
+                    <Dropdown.Toggle className="addCardButton" split variant="outline-dark" id="dropdown-split-basic"  disabled={cards.working}/>
+
+                    <Dropdown.Menu>
+                        <Dropdown.Item  as="button" onClick={(e) => handleCreate(e,"tableauEditor")}>TableauEditor</Dropdown.Item>
+                        <Dropdown.Item  as="button" onClick={(e) => handleCreate(e,"resolver")}>Resolver</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             </div>
         </div>
     )}
@@ -197,7 +206,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
 const mapDispatchToProps = (dispatch) => {
     return {
         updateCard: (card, cards, repo, octokit) => dispatch(updateCard(card, cards,repo, octokit)),
-        createCard: (cards, cardOrder, insertIndex, repo, octokit) => dispatch(createCard(cards, cardOrder, insertIndex, repo, octokit)),
+        createCard: (cards, cardOrder, insertIndex, type, repo, octokit) => dispatch(createCard(cards, cardOrder, insertIndex, type, repo, octokit)),
         deleteCard: (stateCard, cards, cardOrder, repo, octokit) => dispatch(deleteCard(stateCard, cards, cardOrder, repo, octokit)),
         updateOrder: (cardOrder,taskName) => dispatch(updateOrder(cardOrder,taskName)),
         loadCards:(item) => dispatch(loadCards(item))
