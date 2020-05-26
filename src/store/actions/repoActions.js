@@ -1,5 +1,5 @@
 import { loadCards } from "./cardActions"
-
+import { Base64 } from 'js-base64';
 
 export const findUserRepos = (octokit) => {
     return  (dispatch) => {
@@ -25,8 +25,6 @@ export const findUserRepos = (octokit) => {
 
 
 export const setCurrentRepo = (repo, octokit) => {
-    var tempData = []
-
     return  (dispatch) => {
         dispatch({
             type: "SET_WORKING",
@@ -34,12 +32,18 @@ export const setCurrentRepo = (repo, octokit) => {
         })
         octokit.repos.listBranches({
             owner: repo.owner.login,
-            repo: repo.name,        
+            repo: repo.name,
+            headers: {
+                'If-None-Match': ''
+              }      
         }).then((result) => {
             dispatch({
                 type: "SET_CURRENT_REPO",
                 currentRepo: repo,
-                branchList: result.data
+                branchList: result.data,
+            headers: {
+                'If-None-Match': ''
+              }
             })
             dispatch({
                 type:"CLOSE_CARDS"
@@ -56,8 +60,6 @@ export const setCurrentRepo = (repo, octokit) => {
 
 
 export const setCurrentRepoData = (currentRepo, branch, path, octokit) => {
-    var tempData = []
-
     return  (dispatch) => {
         dispatch({
             type: "SET_WORKING",
@@ -67,7 +69,10 @@ export const setCurrentRepoData = (currentRepo, branch, path, octokit) => {
             owner: currentRepo.owner.login,
             repo: currentRepo.name,
             ref: branch.name,
-            path: path
+            path: path,
+            headers: {
+                'If-None-Match': ''
+              }
         }).then((result) => {
             dispatch({
                 type: "SET_CURRENT_REPO_DATA",
@@ -135,7 +140,7 @@ export const loadFile = (repo, file, path, format, octokit,back) => {
                 var parsedItem = JSON.parse(result.data)
                 cardJson = parsedItem.type === "magic" ? true : false
             }catch(e){
-                console.log("Not JSON")
+                
             }
             
             if(cardJson){
@@ -167,8 +172,6 @@ export const loadFile = (repo, file, path, format, octokit,back) => {
 
 
 export const loadFromUrl = (repo, branch, path, octokit) => {
-    var tempData = []
-
     return  (dispatch) => {
         dispatch({
             type: "SET_WORKING",
@@ -178,7 +181,10 @@ export const loadFromUrl = (repo, branch, path, octokit) => {
             owner: repo.currentRepo.owner.login,
             repo: repo.currentRepo.name,
             ref: branch.name,
-            path: path
+            path: path,
+            headers: {
+                'If-None-Match': ''
+              }
         }).then((result) => {
             if(Array.isArray(result.data)){
                 dispatch(setCurrentRepoData(repo.currentRepo,branch, path, octokit))
@@ -207,6 +213,41 @@ export const loadFromUrl = (repo, branch, path, octokit) => {
     }   
 }
 
+
+export const createFile = (name,hist, repo, octokit) => {
+    return  (dispatch) => {
+        var newPath = repo.path + (repo.path === "" ? name : "/" + name) + ".json"
+        var newId = Date.now().toString() + (Math.random()*9999).toString()
+        var newCard = {id: newId, solver: "", solverContent:"", content:""}
+        var newCardArr = {type:"magic",cards: [newCard], cardOrder: [newId] }
+        
+        
+        var content = Base64.encode(JSON.stringify(newCardArr))
+        octokit.repos.createOrUpdateFile({
+            owner: repo.currentRepo.owner.login,
+            repo: repo.currentRepo.name,
+            path: newPath,
+            branch: repo.currentBranch.name,
+            message: "...",
+            content: content, 
+            headers: {
+                'If-None-Match': ''
+              }
+            }).then((result) => {               
+                dispatch({
+                    type: "CREATE_FILE",
+                    currentRepoData: [...repo.currentRepoData, result.data.content]
+                })      
+                hist.push(hist.location.pathname + "/" + name + ".json")
+            })
+                
+            .catch((err) => {
+                alert("File was not saved.\n Please try again.")
+                console.log(err)
+                
+            })
+    }   
+}
 
 export const resetRepoData = () => {
     return  (dispatch) => {

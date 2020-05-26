@@ -5,7 +5,7 @@ import { githubSignin,githubSignout, localStorageSignin } from "../../store/acti
 import {connect} from "react-redux";
 
 
-const Navigation = ({githubSignin,githubSignout, user}) => {
+const Navigation = ({githubSignin,githubSignout, user,state}) => {
    
     return(  
        <Navbar bg="dark" variant= "dark" expand="lg">
@@ -15,7 +15,7 @@ const Navigation = ({githubSignin,githubSignout, user}) => {
             <Nav className="mr-auto">   
             </Nav>
             {
-                //<Button onClick={() => console.log(state)}>State</Button>
+                <Button onClick={() => console.log(state)}>State</Button>
             }
                 
             <Nav className="xs-2">

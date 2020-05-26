@@ -1,8 +1,10 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {connect} from "react-redux";
-import {Card, ListGroup} from "react-bootstrap";
+import {Card, ListGroup, Button} from "react-bootstrap";
 import {loadCards} from "../../store/actions/cardActions"
 import {loadFile} from "../../store/actions/repoActions"
+
+import NewFile from "./NewFile"
 
 import {
     BrowserRouter as Router,
@@ -18,6 +20,7 @@ const Repo = (props) => {
 
     var match = useRouteMatch()
 
+ 
 
 /**
  * Returns each item from repo as Link to render
@@ -34,8 +37,7 @@ const Repo = (props) => {
                         <Link to={generateFolderLink(e)}>{e.name}/</Link>
                     :
                         <Link to={generateFileLink(e)}>{e.name}</Link>
-                }
-                
+                }              
             </ListGroup.Item>
         )
     }
@@ -114,6 +116,7 @@ const Repo = (props) => {
                                 renderListItem(e)
                             )
                         })}
+                          
                     </ListGroup>
                 {
                     repo.currentFileContent ? 
@@ -145,104 +148,3 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(Repo)
-
-/*
-
-const Repo = (props) => {
-    console.log(props)
-    const {repo, octokit, addToPath, loadCards, loadFile, url} = props
-    //console.log(match)
-    var readme = null
-    const getRepoReadme = async () =>{
-        loadFile(repo, readme, "README.md", "html", octokit)
-    }
-    var match = useRouteMatch()
-    console.log("match",match)
-
-    useEffect(() => {
-        console.log("repo effect works too")
-        try{
-            if(repo.currentFile === null){
-                //getRepoReadme()
-            } 
-        }catch(e){
-            console.log(e)
-        }
-    }, [url])
-
-
-    const renderListItem = (e) => {
-        if(e.name === "README.md"){
-            readme = e
-        }
-        return(
-            <ListGroup.Item key={e.sha} onClick={()=>renderItemInfo(e)}>
-            {
-                e.type === "dir" ?
-                    <Link to={`${match.url}/${e.name}`}>{e.name}</Link>
-                :
-                    <Link to={`/${match.params.repo}/${match.params.branch}/${match.params.path ? match.params.path+"/":""}${e.name}`}>{e.name}</Link>
-            }
-            
-        </ListGroup.Item>
-    )
-}
-
-const renderItemInfo = async (e) => {
-    if(e.type === "dir"){
-        addToPath(e.path)
-    }else{
-        if(e.name.includes(".json")){
-            loadFile(repo, e, e.path, "raw", octokit)
-        }else{
-            loadFile(repo, e, e.path, "html", octokit)
-        }           
-    }
-}
-
-
-
-
-return(
-    <div>
-        <Card bg="white" text="black" >
-            <Card.Body>
-                <ListGroup variant="flush">
-                    {repo.currentRepoData && repo.currentRepoData.map( (e) => {
-                        return( 
-                            renderListItem(e)
-                        )
-                    })}
-                </ListGroup>
-            {
-                repo.currentFileContent ? 
-                    <div dangerouslySetInnerHTML={{__html: repo.currentFileContent.data}}/>               
-                :
-                    null 
-            }
-            </Card.Body>
-        </Card>      
-    </div>
-)
-}
-
-
-
-const mapDispatchToProps = (dispatch) => {
-return {
-    loadCards: (item) => dispatch(loadCards(item)),
-    loadFile: (repo, file, path, format, octokit) => dispatch(loadFile(repo, file, path, format, octokit))
-}
-}
-
-
-const mapStateToProps = (state) => {
-return {
-    repo: state.repo,
-    octokit: state.auth.octokit
-}
-}
-
-export default connect(mapStateToProps,mapDispatchToProps)(Repo)
-
-*/

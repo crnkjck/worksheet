@@ -4,14 +4,16 @@ import ActualProof from '../containers/ActualProof'
 import ActualLanguage from '../containers/ActualLanguage'
 import UndoRedo from '../containers/UndoRedo'
 import ImportExport from '../containers/ImportExport'
+import Help from '../components/Help'
 
-const App = ({initState}) => (
+const App = () => (
   <div>
     <UndoRedo />
-    <ImportExport initState = {initState} />
+    <ImportExport />
     <ActualLanguage />
     <ActualProof />
     <AddStep />
+    <Help />
   </div>
 )
 

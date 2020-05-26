@@ -21,7 +21,7 @@ class App extends Component {
   render() {
     return(
       <BrowserRouter>
-        <div className="App" >
+        <div >
           <Navbar/>
           <Switch>
             <Route path = "/:repo?/:branch?/:path*" component={RepoBoard}/>        

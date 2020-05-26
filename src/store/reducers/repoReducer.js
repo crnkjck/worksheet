@@ -92,6 +92,11 @@ const repoReducer = (state = initState, action) => {
                 currentRepoData:[],
                 path:""
             };     
+        case "CREATE_FILE" :  
+            return  {
+                ...state,                
+                currentRepoData: action.currentRepoData,
+            }; 
         default:
             return state;
     }
