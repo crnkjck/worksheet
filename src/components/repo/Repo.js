@@ -17,10 +17,8 @@ const Repo = (props) => {
  
     const {repo, pathToString} = props
     var readme = null
-
     var match = useRouteMatch()
 
- 
 
 /**
  * Returns each item from repo as Link to render

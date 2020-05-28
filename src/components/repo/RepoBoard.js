@@ -7,6 +7,7 @@ import { DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
 import {updateRepo, findUserRepos, resetRepoData, setCurrentRepo, setCurrentRepoData, loadFile, loadFromUrl} from "../../store/actions/repoActions"
 import {closeCards} from "../../store/actions/cardActions"
+import { githubSignin } from "../../store/actions/authActions";
 import NewFile from "./NewFile"
 
 class RepoBoard extends Component{
@@ -15,7 +16,7 @@ class RepoBoard extends Component{
         super(props)
         this.state = {show : false}
     }
-
+// Handlers for file creation modal
     handleClose = () => {
         this.setState({show:false})
     }
@@ -45,8 +46,8 @@ class RepoBoard extends Component{
             this.props.resetRepoData()
             this.props.closeCards()
         }
-        var {match} = this.props
-        var {repo} = this.props
+        let {match} = this.props
+        let {repo} = this.props
         
         if((this.props.user !== prevProps.user)){
 // Load user repos after login           
@@ -81,18 +82,18 @@ class RepoBoard extends Component{
  * 
  */    
     setDataFromURL(){
-        var {params} = this.props.match
-        var {repo} = this.props
+        let {params} = this.props.match
+        let {repo} = this.props
 // Set repo from URL
         if((params.repo !== repo.currentRepo.name) || (params.repo && repo.currentRepo ==="")){
-            var repoItem = repo.repoList.find(e => e.name === params.repo)
+            let repoItem = repo.repoList.find(e => e.name === params.repo)
             if(repoItem){
                 this.props.setCurrentRepo(repoItem, this.props.octokit)
             }
 // Set branch from URL            
         }else if(params.branch !== repo.currentBranch.name){
             if(params.branch !== undefined){
-                var branchItem = repo.branchList.find(e => e.name === params.branch)
+                let branchItem = repo.branchList.find(e => e.name === params.branch)
                 if(branchItem){
                     this.setCurrentBranch(branchItem)
                 }  
@@ -102,7 +103,7 @@ class RepoBoard extends Component{
         else if(params.path !== repo.path){
             if(params.path !== undefined){  
 // Find file with same path as URL path in current repo
-                var dataItem = repo.currentRepoData.find(e => e.path === params.path)
+                let dataItem = repo.currentRepoData.find(e => e.path === params.path)
         
                 if(dataItem !== undefined){
 // In case of file load it to currentFile
@@ -114,11 +115,9 @@ class RepoBoard extends Component{
                             }
                         }
                         
-                        if(dataItem.name.includes(".json")){
-                            
+                        if(dataItem.name.includes(".json")){                         
                             this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "raw", this.props.octokit,this.props.history.goBack)
                         }else{
-                            console.log(this.props.history)
                             this.props.loadFile(this.props.repo, dataItem, this.props.match.params.path, "html", this.props.octokit,this.props.history.goBack)
                         }
 // If folder load it to currentRepoData                     
@@ -126,8 +125,7 @@ class RepoBoard extends Component{
                         this.props.setCurrentRepoData(this.props.repo.currentRepo, this.props.repo.currentBranch, params.path, this.props.octokit)  
                     }
                      
-                }else if(dataItem === undefined && params.url !== "" && !repo.currentFile){
-                    
+                }else if(dataItem === undefined && params.url !== "" && !repo.currentFile){                 
                     this.props.loadFromUrl(this.props.repo, this.props.repo.currentBranch, params.path, this.props.octokit)
                 }       
             }
@@ -153,7 +151,7 @@ class RepoBoard extends Component{
  * Create string from path in Array
  */
     pathToString = (e) => {
-        var x = e.reduce((result, item) => {
+        let x = e.reduce((result, item) => {
             return `${result}${item}/`
           }, "")
           if(x[x.length - 1] === "/"){     
@@ -166,15 +164,15 @@ class RepoBoard extends Component{
  * Create Link for breadcrumbs
  */
     breadcrumbsNav = (e) => {
-        var {params} = this.props.match
-        var link = `/${params.repo}/${params.branch}`
+        let {params} = this.props.match
+        let link = `/${params.repo}/${params.branch}`
 
-        var pathArr = this.props.match.params.path.split("/")
-        var index = pathArr.findIndex(x => x === e)
+        let pathArr = this.props.match.params.path.split("/")
+        let index = pathArr.findIndex(x => x === e)
         
         pathArr = pathArr.slice(0,index+1)
      
-        var newPath = this.pathToString(pathArr)
+        let newPath = this.pathToString(pathArr)
         if(newPath !== ""){
             link = link + "/"
         }
@@ -192,9 +190,9 @@ class RepoBoard extends Component{
         if(user.accessToken === ""){
             return(
                 <Container>
-                    <Row className="justify-content-md-center">
+                    <Row className="justify-content-md-center mt-3">
                         <Col xs={"auto"}>
-                            Log In to see Repositories  
+                            <Button variant="outline-dark" onClick={()=> this.props.githubSignin()}>Log in with GitHub</Button>
                         </Col>   
                     </Row>
                 </Container>
@@ -258,15 +256,20 @@ class RepoBoard extends Component{
                                                 )
                                         })
                                     }
-                                                                
-                                  <Breadcrumb.Item >
+                                {    
+                                repo.currentFile ?                                 
+                                     null               
+                                :
+                                    <Breadcrumb.Item >
                                         <Button size="sm" variant="outline-primary" onClick={() => this.handleShow()}>
-                                            Add
+                                            Add Worksheet
                                         </Button>      
                                         <NewFile handleShow={() => this.handleShow()} handleClose={() => this.handleClose()} show={this.state.show}></NewFile>
-                                    </Breadcrumb.Item>                  
-                           
+                                    </Breadcrumb.Item>
+                                }
+
                                 </Breadcrumb>
+                                   
                             :
                                 null
                         }              
@@ -317,7 +320,8 @@ const mapDispatchToProps = (dispatch) => {
         setCurrentRepoData: (currentRepo, branch, path, octokit) => (dispatch(setCurrentRepoData(currentRepo, branch, path, octokit))),
         loadFile: (repo, file, path, format, octokit,back) => dispatch(loadFile(repo, file, path, format, octokit,back)),
         loadFromUrl: (repo, file, path, format, octokit) => dispatch(loadFromUrl(repo, file, path, format, octokit)),
-        closeCards: () => dispatch(closeCards())
+        closeCards: () => dispatch(closeCards()),
+        githubSignin: () => dispatch(githubSignin()),
     }
 }
 

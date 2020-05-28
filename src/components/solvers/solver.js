@@ -13,7 +13,7 @@ const Solver = ({type, content, handleChange}) => {
             handleChange(tableauData)
         });
     }
-    
+
     const renderSolver = () => {
         if(type === "tableauEditor"){
             return (

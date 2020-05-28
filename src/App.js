@@ -11,7 +11,6 @@ class App extends Component {
     super(props);
     var user = localStorage.getItem("user")
     if(user === null || user === "null"){
-      console.log("Not logged in")
     }else{
       this.props.localStorageSignin()
     }

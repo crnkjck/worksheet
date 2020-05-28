@@ -23,7 +23,7 @@ const NewFile = ({handleClose,show,repo,octokit,createFile}) => {
     return(
         <Modal show={show} onHide={() => handleClose()}>
             <Modal.Header closeButton>
-            <Modal.Title>Create new File</Modal.Title>
+            <Modal.Title>Create new worksheet</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>

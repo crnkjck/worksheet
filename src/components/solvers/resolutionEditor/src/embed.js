@@ -1,6 +1,5 @@
 import React from 'react';
 import App from "./components/App";
-//import store from './app/store';
 import { Provider} from 'react-redux';
 import {importState, exportState} from "./reducers/index"
 import { createStore,applyMiddleware } from 'redux'
@@ -19,20 +18,18 @@ const Embed = ({initState,changeState} = {}) => {
             return returnValue
         }
     }
-    var store = null
-    if(initState === ""){
-        store = createStore(
-            reducer,
-            applyMiddleware(sender)
-        );
+    let preloadedState = null
+    if(initState !== ""){
+        preloadedState = importState(initState) 
     }else{
-        const preloadedState = importState(initState)
-        store = createStore(
-            reducer,
-            preloadedState,
-            applyMiddleware(sender)
-            );
+        preloadedState = importState("{\"language\":{\"consts\":{\"input\":\"\",\"object\":[],\"error\":\"\",\"symbols\":[]},\"funs\":{\"input\":\"\",\"object\":[],\"error\":\"\",\"symbols\":[]},\"preds\":{\"input\":\"\",\"object\":[],\"error\":\"\",\"symbols\":[]}},\"steps\":{\"order\":[],\"allSteps\":[],\"rank\":[],\"id\":0},\"inputChange\":{\"originValue\":\"\"}}")
     }
+
+    const store = createStore(
+        reducer,
+        preloadedState,
+        applyMiddleware(sender)
+    );
     return(
         <React.StrictMode>
             <Provider store={store}>

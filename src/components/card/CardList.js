@@ -9,7 +9,7 @@ import update from 'immutability-helper';
 
 const CardList = ({cards, cardOrder, updateOrder}) => {
 
-    var taskCards = []
+    let taskCards = []
     cardOrder.map((item) => {
         taskCards = [...taskCards, cards.find(e => e.id === item)]
     })

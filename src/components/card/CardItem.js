@@ -12,6 +12,9 @@ import Solver from "../solvers/Solver.js"
 
 const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCard, updateOrder, index, moveCard, taskName, loadCards, updateCard}) => {
 
+/**
+ * Check if card should be closed or open on initialization
+ */
     const editOnLoad = () => {
         if(card.content === "" && card.solver === ""){
             return true
@@ -23,8 +26,9 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
     const ref = useRef(null)
     const [cardState, setCardState] = useState(card) 
     const [edit, setEdit] = useState({edit: editOnLoad()})
+
     useEffect(() => {setCardState(card)},[card])
-    
+
     const [, drop] = useDrop({
         accept: ItemTypes.CARD,
         hover(item, monitor){
@@ -69,7 +73,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
 
     drag(drop(ref))
 
-
+    
     const handleBeginEdit = () => {
          setEdit({edit:true})    
     }
@@ -83,8 +87,8 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
 
     const handleEditSubmit = (e) => {
         e.preventDefault();     
-        var newSolverContent = tempContent === "" ? cardState.solverContent : tempContent      
-        var tempCard = {...cardState, solverContent: newSolverContent}
+        let newSolverContent = tempContent === "" ? cardState.solverContent : tempContent      
+        let tempCard = {...cardState, solverContent: newSolverContent}
         updateCard(tempCard, cards, repo, octokit)
         setEdit({edit:false})
         setCardState(tempCard)
@@ -98,7 +102,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
 
     const handleCreate = (e,type) => {
         e.preventDefault()
-        var insertIndex = cardOrder.findIndex(checkIndex) + 1
+        let insertIndex = cardOrder.findIndex(checkIndex) + 1
         createCard(cards, cardOrder, insertIndex, type, repo, octokit)
     }
     
@@ -109,7 +113,7 @@ const CardItem = ({card, cards, cardOrder, repo,  octokit, createCard, deleteCar
             deleteCard(cardState, cards, cardOrder, repo, octokit)
         }
     }
-    var tempContent = ""
+    let tempContent = ""
     const handleSolverContent = (e) => {
         tempContent = e
         setCardState({...cardState, solverContent:e})

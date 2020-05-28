@@ -9,7 +9,6 @@ export const createCard = (cards, cardOrder, insertIndex, type, repo, octokit) =
     var newCardArr = {type:"magic",cards: [...cards.cards, newCard], cardOrder: tempOrder }
     var content = Base64.encode(JSON.stringify(newCardArr))
 
-    console.log(newCardArr)
     return  (dispatch) => {
         dispatch({
             type: "SET_WORKING",

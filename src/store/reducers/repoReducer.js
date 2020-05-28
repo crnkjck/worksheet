@@ -61,7 +61,6 @@ const repoReducer = (state = initState, action) => {
             }; 
 
         case "UPDATE_REPO" : 
-            console.log("UPDATE_REPO", action, state)
             return {
                 ...state,
                 repoList: action.repoList,
