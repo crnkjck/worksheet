@@ -1,0 +1,137 @@
+html{
+  min-height: 100%;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /*
+  background: url("/img/pokemon-bg.jpg") no-repeat;
+  background-size: 100%;
+  background-position: bottom;
+  min-height: 100%;
+  */
+}
+
+
+.toolbar{
+  display: flex;
+  justify-content: right;
+}
+
+.secondnav{
+  margin: 13px;
+}
+
+.list-group-item.active {
+  background-color: grey;
+  border-color: grey; 
+}
+
+
+.mainText{
+  margin-top: 60px;
+
+}
+
+
+
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.cardCell:focus-within{
+  box-shadow: 8px 9px 10px -9px rgba(0,0,0,0.75);
+    transition: box-shadow 0.3s;
+}
+
+.cardCell:hover{
+  box-shadow: 8px 9px 10px -9px rgba(0,0,0,0.75);
+    transition: box-shadow 0.3s;
+}
+
+.secondNavItem:hover{
+  box-shadow: 8px 9px 10px -9px rgba(0,0,0,0.75);
+  color: white;
+  background-color: #6c757d;
+  transition: background-color 0.3s;
+}
+
+.secondNavItem:active{
+  background-color: #343a40;
+}
+
+.addCard{
+  position: absolute;
+  text-align: center;
+  bottom: -15px;
+  height: 20px;
+  width: 200px;
+  left:40%;
+  z-index: 1;
+}
+
+
+.addCardButton{
+  padding: 0px;
+  position: absolute;
+  text-align: center;
+  vertical-align: middle;
+  width: 100px;
+  height: 20px;
+  font-size: 10px;
+  left: 20%;
+  display: none;
+  z-index: 2;
+  background-color: white;
+}
+
+.addCard:hover .addCardButton{
+  display: block;
+}
+
+.cardCell label{
+  width: 100%;
+}
+
+.tempCheckbox{
+  position: absolute;
+  opacity: 0;
+} 
+
+
+.findUserForm{
+  margin: 0;
+}
+
+.findUserForm button{
+  margin:0;
+}
+
+
+.repoNav{
+  padding:0px;
+}
+
+.cardEditor{
+  margin:0;
+  padding:0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
