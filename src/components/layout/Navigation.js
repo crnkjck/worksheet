@@ -5,18 +5,16 @@ import { githubSignin,githubSignout, localStorageSignin } from "../../store/acti
 import {connect} from "react-redux";
 
 
-const Navigation = ({githubSignin,githubSignout, user,state}) => {
+const Navigation = ({githubSignin,githubSignout, user}) => {
    
     return(  
        <Navbar bg="dark" variant= "dark" expand="lg">
             <LinkContainer to = '/'>
                 <Navbar.Brand className="text-white">Matematika 4</Navbar.Brand>
             </LinkContainer>
+
             <Nav className="mr-auto">   
             </Nav>
-            {
-                //<Button onClick={() => console.log(state)}>State</Button>
-            }
                 
             <Nav className="xs-2">
                 {
@@ -44,8 +42,7 @@ const mapStateToProps = (state) => {
     return {
         user: state.auth.user,
         cards: state.card,
-        cardOrder: state.card.cardOrder,
-        state: state
+        cardOrder: state.card.cardOrder
     }
 }
 
