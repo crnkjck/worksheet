@@ -15,7 +15,7 @@ const Navigation = ({githubSignin,githubSignout, user,state}) => {
             <Nav className="mr-auto">   
             </Nav>
             {
-                <Button onClick={() => console.log(state)}>State</Button>
+                //<Button onClick={() => console.log(state)}>State</Button>
             }
                 
             <Nav className="xs-2">
